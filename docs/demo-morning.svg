@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- A scripted /morning interaction. SMIL animation, ~30s cycle, loops. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 520" font-family="ui-monospace, SFMono-Regular, Menlo, Monaco, 'Cascadia Code', Consolas, monospace">
+  <defs>
+    <filter id="frameShadow" x="-2%" y="-2%" width="104%" height="106%">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="3"/>
+      <feOffset dx="0" dy="2" result="off"/>
+      <feComponentTransfer><feFuncA type="linear" slope="0.25"/></feComponentTransfer>
+      <feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+
+  <!-- Page background -->
+  <rect width="800" height="520" fill="#f8fafc"/>
+
+  <!-- Terminal frame -->
+  <g filter="url(#frameShadow)">
+    <rect x="20" y="20" width="760" height="480" rx="10" fill="#0f172a"/>
+    <!-- title bar -->
+    <rect x="20" y="20" width="760" height="32" rx="10" fill="#1e293b"/>
+    <rect x="20" y="40" width="760" height="12" fill="#1e293b"/>
+    <circle cx="44" cy="36" r="6" fill="#ef4444"/>
+    <circle cx="64" cy="36" r="6" fill="#f59e0b"/>
+    <circle cx="84" cy="36" r="6" fill="#10b981"/>
+    <text x="400" y="40" text-anchor="middle" font-size="11" fill="#64748b">claude code — ~/Documents/lifeos</text>
+  </g>
+
+  <!-- Caption above terminal -->
+  <text x="400" y="14" text-anchor="middle" font-size="11" fill="#64748b" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif">A scripted /morning — one 30-second cycle, then loops.</text>
+
+  <!--
+    Animation cycle: 30s.
+    Each line fades in at its `tin` (1 second normalized = 1/30 of cycle),
+    stays visible, then fades out at t=28..29.
+
+    Helper key/time table (normalized to dur=30s):
+      tin     keyTimes                            values
+      0.5s    "0; 0.0167; 0.0267; 0.9333; 0.9667; 1"
+      2.5s    "0; 0.0833; 0.0933; 0.9333; 0.9667; 1"
+      ...
+    values pattern for all: "0;0;1;1;0;0"
+  -->
+
+  <g font-size="13" fill="#cbd5e1">
+
+    <!-- Prompt + user invokes /morning -->
+    <text x="40" y="84" fill="#a3e635">$</text>
+    <text x="60" y="84" fill="#fafaf9" opacity="0">
+      /morning
+      <animate attributeName="opacity" values="0;0;1;1;0;0"
+        keyTimes="0; 0.017; 0.027; 0.933; 0.967; 1"
+        dur="30s" repeatCount="indefinite"/>
+    </text>
+    <!-- blinking cursor that disappears once input is typed -->
+    <rect x="60" y="73" width="9" height="14" fill="#a3e635" opacity="0">
+      <animate attributeName="opacity" values="1;1;0;0"
+        keyTimes="0; 0.017; 0.027; 1" dur="30s" repeatCount="indefinite"/>
+      <animate attributeName="fill-opacity" values="1;0;1" dur="1s" repeatCount="indefinite"/>
+    </rect>
+
+    <!-- Step 1: calendar -->
+    <text x="40" y="116" fill="#38bdf8" opacity="0">
+      [1/3] Pulling calendar from icalBuddy…
+      <animate attributeName="opacity" values="0;0;1;1;0;0"
+        keyTimes="0; 0.083; 0.097; 0.933; 0.967; 1"
+        dur="30s" repeatCount="indefinite"/>
+    </text>
+    <text x="60" y="136" fill="#94a3b8" opacity="0">
+      09:30  <tspan fill="#cbd5e1">Andrea — grant timeline check-in</tspan>
+      <animate attributeName="opacity" values="0;0;1;1;0;0"
+        keyTimes="0; 0.117; 0.130; 0.933; 0.967; 1"
+        dur="30s" repeatCount="indefinite"/>
+    </text>
+    <text x="60" y="154" fill="#94a3b8" opacity="0">
+      14:00  <tspan fill="#cbd5e1">Lab meeting — Jordan's preprint</tspan>
+      <animate attributeName="opacity" values="0;0;1;1;0;0"
+        keyTimes="0; 0.133; 0.147; 0.933; 0.967; 1"
+        dur="30s" repeatCount="indefinite"/>
+    </text>
+
+    <!-- Step 2: email -->
+    <text x="40" y="184" fill="#38bdf8" opacity="0">
+      [2/3] Scanning email (gemini)…
+      <animate attributeName="opacity" values="0;0;1;1;0;0"
+        keyTimes="0; 0.167; 0.180; 0.933; 0.967; 1"
+        dur="30s" repeatCount="indefinite"/>
+    </text>
+    <text x="60" y="204" fill="#cbd5e1" opacity="0">
+      <tspan fill="#94a3b8">→</tspan> action: send 2nd-round feedback to Mei by Fri
+      <animate attributeName="opacity" values="0;0;1;1;0;0"
+        keyTimes="0; 0.200; 0.213; 0.933; 0.967; 1"
+        dur="30s" repeatCount="indefinite"/>
+    </text>
+
+    <!-- Step 3: journal review -->
+    <text x="40" y="232" fill="#38bdf8" opacity="0">
+      [3/3] Reading yesterday's journal…
+      <animate attributeName="opacity" values="0;0;1;1;0;0"
+        keyTimes="0; 0.233; 0.247; 0.933; 0.967; 1"
+        dur="30s" repeatCount="indefinite"/>
+    </text>
+
+    <!-- Proposed priorities header -->
+    <text x="40" y="266" fill="#fafaf9" font-weight="700" opacity="0">
+      Proposed priorities for today:
+      <animate attributeName="opacity" values="0;0;1;1;0;0"
+        keyTimes="0; 0.300; 0.313; 0.933; 0.967; 1"
+        dur="30s" repeatCount="indefinite"/>
+    </text>
+    <text x="60" y="286" fill="#cbd5e1" opacity="0">
+      1. Finalize manuscript intro  <tspan fill="#fbbf24">(carry-over, day 3)</tspan>
+      <animate attributeName="opacity" values="0;0;1;1;0;0"
+        keyTimes="0; 0.333; 0.347; 0.933; 0.967; 1"
+        dur="30s" repeatCount="indefinite"/>
+    </text>
+    <text x="60" y="304" fill="#cbd5e1" opacity="0">
+      2. Draft JD — first direct report
+      <animate attributeName="opacity" values="0;0;1;1;0;0"
+        keyTimes="0; 0.350; 0.363; 0.933; 0.967; 1"
+        dur="30s" repeatCount="indefinite"/>
+    </text>
+    <text x="60" y="322" fill="#cbd5e1" opacity="0">
+      3. Andrea grant prep
+      <animate attributeName="opacity" values="0;0;1;1;0;0"
+        keyTimes="0; 0.367; 0.380; 0.933; 0.967; 1"
+        dur="30s" repeatCount="indefinite"/>
+    </text>
+
+    <!-- Critical-partner challenge -->
+    <text x="40" y="358" fill="#fbbf24" opacity="0">
+      ⚠  Priority #1 has been on the list for 3 days.
+      <animate attributeName="opacity" values="0;0;1;1;0;0"
+        keyTimes="0; 0.433; 0.447; 0.933; 0.967; 1"
+        dur="30s" repeatCount="indefinite"/>
+    </text>
+    <text x="40" y="378" fill="#fbbf24" opacity="0">
+      Do it today, or formally defer past this week?
+      <animate attributeName="opacity" values="0;0;1;1;0;0"
+        keyTimes="0; 0.450; 0.463; 0.933; 0.967; 1"
+        dur="30s" repeatCount="indefinite"/>
+    </text>
+
+    <!-- User answer -->
+    <text x="40" y="410" fill="#a3e635" opacity="0">
+      &gt;
+      <animate attributeName="opacity" values="0;0;1;1;0;0"
+        keyTimes="0; 0.533; 0.547; 0.933; 0.967; 1"
+        dur="30s" repeatCount="indefinite"/>
+    </text>
+    <text x="60" y="410" fill="#fafaf9" opacity="0">
+      do today
+      <animate attributeName="opacity" values="0;0;1;1;0;0"
+        keyTimes="0; 0.567; 0.580; 0.933; 0.967; 1"
+        dur="30s" repeatCount="indefinite"/>
+    </text>
+
+    <!-- Writes -->
+    <text x="40" y="442" fill="#10b981" opacity="0">
+      ✓ <tspan fill="#cbd5e1">wrote journal/2026/05/2026-05-15.md</tspan>
+      <animate attributeName="opacity" values="0;0;1;1;0;0"
+        keyTimes="0; 0.633; 0.647; 0.933; 0.967; 1"
+        dur="30s" repeatCount="indefinite"/>
+    </text>
+    <text x="40" y="460" fill="#10b981" opacity="0">
+      ✓ <tspan fill="#cbd5e1">updated now.md</tspan>
+      <animate attributeName="opacity" values="0;0;1;1;0;0"
+        keyTimes="0; 0.650; 0.663; 0.933; 0.967; 1"
+        dur="30s" repeatCount="indefinite"/>
+    </text>
+    <text x="40" y="478" fill="#fafaf9" font-weight="700" opacity="0">
+      Go.
+      <animate attributeName="opacity" values="0;0;1;1;0;0"
+        keyTimes="0; 0.667; 0.680; 0.933; 0.967; 1"
+        dur="30s" repeatCount="indefinite"/>
+    </text>
+  </g>
+</svg>
