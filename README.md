@@ -1,30 +1,32 @@
-# lifeos
+# LifeOS
 
 **An opinionated, agentic life-OS for Claude Code.** A lived-in scaffold, not a starter kit — every file shape, skill, and review cadence comes from running it for real, not from speculation.
 
-Fork freely (CC BY 4.0). No support. Make it yours.
+A "life-OS" is a personal operating system in markdown: a vault for journaling, decisions, projects, notes, and people — paired with daily, weekly, and quarterly review skills that keep it from rotting.
+
+![Architecture: five layers, one feedback loop](docs/architecture.svg)
+
+**Built for** solo knowledge workers, researchers, engineering leads, founders, and PIs juggling many threads — anyone who already lives in markdown and wants an AI to enforce review discipline.
+
+**This is an artifact, not a project.** Fork freely (CC BY 4.0). Issues are disabled. PRs are not actively reviewed. If something here is wrong for your life, change it — don't expect upstream fixes.
 
 ---
 
-## What this is
+## See it in action
 
-A markdown vault you maintain with [Claude Code](https://www.anthropic.com/claude-code), organized into five layers:
+A scripted `/morning` — 30-second loop:
 
-| Layer | What | Files / Skills |
-|-------|------|---------------|
-| **Foundation** | Who you are, where you're going | `plan.md`, `values.md`, `journal/YYYY/goals.md`, `now.md`, `CLAUDE.md` |
-| **Knowledge** | What you know | `notes/`, `research/`, `decisions/`, `people/`, `projects/`, `wiki/`, `raw/`, `templates/` |
-| **Connections** | External state coming in | `calendar/export-calendar.sh`, `scripts/email-scan.sh`, `scripts/meeting-ingest.py` |
-| **Execution** | Rituals that run on a cadence | `/morning`, `/end-of-day`, `/weekly-review`, `/meeting-prep`, `/decide` |
-| **Feedback** | The layer that prevents rot | `/audit`, `/decide-revisit`, `/quarterly-review` |
+![/morning demo](docs/demo-morning.svg)
 
-Plus two bootstrap skills (`/init`, `/orient`) for getting set up.
+Then read [`examples/`](examples/) for filled-in samples of every file kind: a real-feeling `now.md`, a populated `inbox.md`, a substantive daily journal entry, a `/weekly-review` output, a prospective decision and the same decision revisited three months later, an atomic note, and a person record. Templates show you the shape; examples show you the standard.
 
-## Why another vault template
+---
+
+## What this gets right
 
 Most public Claude Code vault templates are scaffolds. They look great at launch and rot within 2-3 months because they don't include the feedback layer — the periodic audit, the decision revisit, the quarterly forced rewrite. This one does.
 
-Specifically, things this template gets right that most don't:
+Specifically:
 
 - **A vault audit skill (`/audit`)** that scores the vault, flags stale goals / broken wiki-links / orphan notes / decisions missing revisit dates, and writes the audit log to `research/vault-audits/` so trends are visible across runs.
 - **Prospective decision capture (`/decide`)** in Patrick Collison / Farnam Street format: alternatives, prediction at 30/90/365 days, confidence, worst case, what would change my mind, revisit date.
@@ -32,11 +34,32 @@ Specifically, things this template gets right that most don't:
 - **A real quarterly review (`/quarterly-review`)** that *forces* either a goals.md rewrite or formal legacy acceptance — the most common failure mode is a stale annual plan that never gets honestly re-evaluated.
 - **A "critical partner not completer" philosophy** wired into CLAUDE.md, with concrete push-back examples baked into every skill prompt.
 
+## A typical week
+
+Friday, 4:17 pm. `/weekly-review` fires from a scheduled routine. It reads the last seven daily journals, the inbox, `now.md`, and the GitHub state. Three minutes later it surfaces: you've mentioned the same blocked migration three times this week without progress, two inbox items have aged past 14 days, and a decision you captured in April has a revisit date that just passed. It drafts `week-19.md`, updates `now.md`, and forces one question: *make the migration call now or formally park it past Q3?* You pick. The week closes.
+
+Tuesday, 9:00 am. `/morning` ran while you were still on coffee. It pulled today's calendar, scanned email for actionable bullets, read yesterday's journal, and proposes three priorities. One of them has been on the list for three days — it asks you directly: *do it today or defer past this week?* You decide. The journal file is written. You're done in five minutes.
+
+After 90 days, you'll have ~12 weekly reviews, 3-8 decisions captured prospectively, 30+ atomic notes, and a `now.md` that a colleague could read to brief themselves in 60 seconds.
+
+## How this is different from …
+
+| Tool | What it gives you | What's missing (that LifeOS adds) |
+|------|-------------------|-----------------------------------|
+| **Obsidian + Daily Notes plugin** | Markdown vault, wiki-links, graph view, daily template | No skills, no review cadence, no decision-revisit loop, no critical-partner AI |
+| **Notion + AI** | Database + AI for one-shot Q&A | Not a file system, not git-friendly, no enforced rhythm, hard to run scheduled agents on |
+| **Mem / Reflect / similar** | Daily journal + AI search | Closed format, no decision records, no audit loop, can't customize the skills |
+| **Bullet journal + a habit tracker** | Discipline, no software | No knowledge graph, no AI partner, no automated weekly synthesis |
+
+LifeOS is markdown + git + skills. Nothing proprietary. The discipline is enforced by the skills, not by your willpower.
+
 ## Quick start
 
 ```bash
-# 1. Clone
+# 1. Clone (use either)
 gh repo clone seandavi/lifeos-template ~/Documents/lifeos
+# or:
+git clone https://github.com/seandavi/lifeos-template.git ~/Documents/lifeos
 cd ~/Documents/lifeos
 
 # 2. From within Claude Code (anywhere), run:
@@ -55,35 +78,32 @@ cd ~/Documents/lifeos
 
 That's it. Everything else is on-demand or scheduled.
 
-## Skills catalog
+## Five layers
 
-| Skill | When | What it does |
-|-------|------|--------------|
-| `/init` | First run | Substitutes `<VAULT_ROOT>` placeholder, gathers preferences, seeds plan/values if asked |
-| `/orient` | After init | 5-minute tour of the 5-layer architecture |
-| `/morning` | Daily AM | 11-step routine: calendar+email parallel, yesterday review, inbox hygiene, today's journal, reality check, priorities, alignment challenge, carry forward, now.md update |
-| `/end-of-day` | Daily PM | Closes the loop: lifts completed items to `completed.md` with strategic context, captures notes/decisions, evening Franklin question |
-| `/weekly-review` | Fridays | Past-7-days synthesis, updates `now.md`, drafts `week-WW.md`, triages stale inbox, forces one decision |
-| `/meeting-prep` | Nightly / on-demand | Briefs for upcoming meetings — 3 things to know, 3 questions to ask, 1 risk, last commitments |
-| `/decide` | When a decision surfaces | Prospective capture in Collison/Farnam format with revisit date |
-| `/decide-revisit` | Monthly | Walks decisions whose review date passed; calibrate prediction vs reality |
-| `/audit` | Monthly | Vault hygiene: stale goals, broken wiki-links, orphan notes, decisions without revisit dates. Scores 0-100. |
-| `/quarterly-review` | Quarterly (Jan/Apr/Jul/Oct 1st) | Heavy strategic review; forces goals.md rewrite if conditions have changed |
+| Layer | What | Files / Skills |
+|-------|------|---------------|
+| **Foundation** | Who you are, where you're going | `plan.md`, `values.md`, `journal/{{YYYY}}/goals.md`, `now.md`, `CLAUDE.md` |
+| **Knowledge** | What you know | `notes/`, `research/`, `decisions/`, `people/`, `projects/`, `wiki/`, `raw/`, `templates/` |
+| **Connections** | External state coming in | `calendar/export-calendar.sh`, `scripts/email-scan.sh`, `scripts/meeting-ingest.py` |
+| **Execution** | Rituals that run on a cadence | `/morning`, `/end-of-day`, `/weekly-review`, `/meeting-prep`, `/decide` |
+| **Feedback** | The layer that prevents rot | `/audit`, `/decide-revisit`, `/quarterly-review` |
+
+Plus two bootstrap skills (`/init`, `/orient`) for getting set up. Each skill self-documents in `.claude/skills/<name>/SKILL.md` — read those for the full step lists.
 
 ## External dependencies
 
-This template assumes macOS by default because that's where it was built. **None of the dependencies are essential** — every one of them has a swap-out point, listed below.
+**Minimum viable path: Claude Code + git.** Everything else is optional and swappable.
+
+This template was built on macOS, so the calendar and email integrations default to macOS tools. None of them are essential — each has a documented swap-out point. Plan to spend ~30 minutes adapting the Connections layer if you're on Linux or Windows.
 
 | Dependency | What for | Required? | Cross-platform swap |
 |-----------|----------|----------|---------------------|
-| [Claude Code](https://www.anthropic.com/claude-code) | Skill runtime | **Yes** | Available on macOS, Linux, Windows (via WSL) |
-| `icalBuddy` (macOS, `brew install ical-buddy`) | Calendar → markdown | No — calendar export is optional | **Linux**: use `gcalcli` (Google Calendar CLI) or `khal` (CalDAV). **Windows**: PowerShell + Outlook COM, or `gcalcli` under WSL. Rewrite `calendar/export-calendar.sh` to your tool's output format. |
-| `osascript` + macOS Mail.app | Email scan (AppleScript bridge) | No — email scan is optional | **Linux**: use `notmuch`, `mu`, or `mbsync` + IMAP scripts. **Windows**: PowerShell + Outlook COM, or use Gmail/Outlook web APIs. Rewrite `scripts/email-scan.sh` to emit the same `calendar/email-scan.md` markdown. |
-| `gemini` CLI (Google AI Studio) | LLM that filters the raw email dump into actionable bullets | No — swap via `EMAIL_LLM` env var | **Any LLM CLI works**: `claude` (Anthropic's CLI), `ollama` (local), `llm` (Simon Willison's), or any OpenAI-compatible tool. Set `EMAIL_LLM="claude -p"` (or similar) before running. |
-| `gh` CLI | GitHub state in `/weekly-review` | No — skill gracefully skips if not authed | Available on all platforms; or skip and edit the skill to remove the `gh` calls. |
-| `git` | Vault is a git repo | Strongly recommended | Universal. |
-
-The Connections layer is intentionally the most platform-specific. If you're on Linux or Windows, plan to spend ~30 min adapting `calendar/export-calendar.sh` and `scripts/email-scan.sh` to your tooling.
+| [Claude Code](https://claude.com/claude-code) | Skill runtime | **Yes** | macOS, Linux, Windows (WSL) |
+| `git` | Vault is a git repo | Strongly recommended | Universal |
+| `icalBuddy` (`brew install ical-buddy`) | Calendar → markdown | No — calendar export is optional | **Linux:** `gcalcli` or `khal`. **Windows:** PowerShell + Outlook COM, or `gcalcli` under WSL. Rewrite `calendar/export-calendar.sh` to your tool's output. |
+| `osascript` + macOS Mail.app | Email scan (AppleScript bridge) | No — email scan is optional | **Linux:** `notmuch`, `mu`, or `mbsync` + IMAP. **Windows:** PowerShell + Outlook COM, or Gmail/Outlook web APIs. Rewrite `scripts/email-scan.sh` to emit the same markdown shape. |
+| `gemini` CLI | LLM that filters the raw email dump into actionable bullets | No — swap via `EMAIL_LLM` env var | Any LLM CLI works: `claude -p`, `ollama`, `llm` (Simon Willison's), or any OpenAI-compatible tool. |
+| `gh` CLI | GitHub state in `/weekly-review` | No — skill skips if not authed | Universal, or remove the `gh` calls |
 
 ## Editor / IDE setup
 
@@ -155,12 +175,6 @@ Everything is editable. A few specific levers:
 - **Layers.** If you don't need the `wiki/` (structured domain knowledge) or `raw/` (source ingest), delete them. The other skills don't depend on them.
 - **Diary.** `personal/diary.md` is optional. If you don't want it, delete the file and remove Step 3 from the morning skill.
 
-## A note on "no support"
-
-This is an **artifact, not a project**. It isn't maintained as software. Issues are disabled in this repo. PRs are not actively reviewed. Fork it, change it, make it yours. If something here is wrong for your life, it's wrong — don't expect upstream fixes.
-
-If you ship a meaningful adaptation publicly, link back as a courtesy. That's the CC BY part.
-
 ## Credit
 
 Built by [Sean Davis](https://github.com/seandavi) on top of Anthropic's Claude Code. Influenced by:
@@ -175,4 +189,4 @@ Built by [Sean Davis](https://github.com/seandavi) on top of Anthropic's Claude 
 
 ## License
 
-[CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). See `LICENSE`.
+[CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). See `LICENSE`. If you ship a meaningful adaptation publicly, link back as a courtesy.

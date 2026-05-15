@@ -31,3 +31,7 @@ dist/
 build/
 __pycache__/
 *.pyc
+
+# Local preview renders of docs/ SVGs
+docs/*-preview.png
+docs/*-preview.gif
