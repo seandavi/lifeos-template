@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 580" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif">
+  <defs>
+    <marker id="arrowhead" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L9,3 z" fill="#475569"/>
+    </marker>
+    <marker id="arrowFeedback" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L9,3 z" fill="#e11d48"/>
+    </marker>
+    <filter id="cardShadow" x="-5%" y="-5%" width="110%" height="115%">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="2"/>
+      <feOffset dx="0" dy="1" result="off"/>
+      <feComponentTransfer><feFuncA type="linear" slope="0.18"/></feComponentTransfer>
+      <feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+
+  <rect width="960" height="580" fill="#fafaf9"/>
+
+  <!-- Title block -->
+  <text x="480" y="42" text-anchor="middle" font-size="22" font-weight="600" fill="#0f172a">LifeOS — five layers, one feedback loop</text>
+  <text x="480" y="66" text-anchor="middle" font-size="13" fill="#64748b">A markdown vault for Claude Code. The bottom layer is the part most templates skip.</text>
+
+  <!-- Feedback loop arrow (sits BELOW the title, ABOVE the cards) -->
+  <g fill="none" stroke="#e11d48" stroke-width="2.5" opacity="0.9">
+    <path d="M840,160 C840,115 800,100 760,100 L200,100 C140,100 60,115 60,160"
+          marker-end="url(#arrowFeedback)"/>
+  </g>
+  <text x="480" y="94" text-anchor="middle" font-size="12" fill="#9f1239" font-weight="600">feedback loop</text>
+  <text x="480" y="110" text-anchor="middle" font-size="10" fill="#9f1239" font-style="italic">keeps the system honest as conditions change</text>
+
+  <!-- Layer cards: y=160 → 440 -->
+
+  <!-- Layer 1: Foundation -->
+  <g transform="translate(24,160)" filter="url(#cardShadow)">
+    <rect width="168" height="280" rx="8" fill="#ffffff" stroke="#e2e8f0"/>
+    <rect width="6" height="280" rx="3" fill="#475569"/>
+    <text x="20" y="32" font-size="11" font-weight="600" fill="#64748b" letter-spacing="0.5">LAYER 1</text>
+    <text x="20" y="56" font-size="18" font-weight="600" fill="#0f172a">Foundation</text>
+    <text x="20" y="78" font-size="11" fill="#64748b" font-style="italic">Who you are.</text>
+
+    <text x="20" y="112" font-size="11" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" fill="#334155">plan.md</text>
+    <text x="20" y="132" font-size="11" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" fill="#334155">values.md</text>
+    <text x="20" y="152" font-size="11" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" fill="#334155">goals.md</text>
+    <text x="20" y="172" font-size="11" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" fill="#334155">now.md</text>
+    <text x="20" y="192" font-size="11" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" fill="#334155">CLAUDE.md</text>
+
+    <text x="20" y="232" font-size="10" fill="#94a3b8">Updates slowly.</text>
+    <text x="20" y="248" font-size="10" fill="#94a3b8">10-yr vision →</text>
+    <text x="20" y="264" font-size="10" fill="#94a3b8">weekly snapshot.</text>
+  </g>
+
+  <!-- Layer 2: Knowledge -->
+  <g transform="translate(204,160)" filter="url(#cardShadow)">
+    <rect width="168" height="280" rx="8" fill="#ffffff" stroke="#e2e8f0"/>
+    <rect width="6" height="280" rx="3" fill="#4f46e5"/>
+    <text x="20" y="32" font-size="11" font-weight="600" fill="#64748b" letter-spacing="0.5">LAYER 2</text>
+    <text x="20" y="56" font-size="18" font-weight="600" fill="#0f172a">Knowledge</text>
+    <text x="20" y="78" font-size="11" fill="#64748b" font-style="italic">What you know.</text>
+
+    <text x="20" y="112" font-size="11" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" fill="#334155">notes/</text>
+    <text x="20" y="132" font-size="11" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" fill="#334155">research/</text>
+    <text x="20" y="152" font-size="11" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" fill="#334155">decisions/</text>
+    <text x="20" y="172" font-size="11" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" fill="#334155">people/</text>
+    <text x="20" y="192" font-size="11" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" fill="#334155">projects/</text>
+    <text x="20" y="212" font-size="11" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" fill="#334155">wiki/</text>
+
+    <text x="20" y="248" font-size="10" fill="#94a3b8">Atomic notes.</text>
+    <text x="20" y="264" font-size="10" fill="#94a3b8">[[wiki-links]]</text>
+  </g>
+
+  <!-- Layer 3: Connections -->
+  <g transform="translate(384,160)" filter="url(#cardShadow)">
+    <rect width="168" height="280" rx="8" fill="#ffffff" stroke="#e2e8f0"/>
+    <rect width="6" height="280" rx="3" fill="#0d9488"/>
+    <text x="20" y="32" font-size="11" font-weight="600" fill="#64748b" letter-spacing="0.5">LAYER 3</text>
+    <text x="20" y="56" font-size="18" font-weight="600" fill="#0f172a">Connections</text>
+    <text x="20" y="78" font-size="11" fill="#64748b" font-style="italic">External state in.</text>
+
+    <text x="20" y="112" font-size="11" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" fill="#334155">calendar/</text>
+    <text x="20" y="132" font-size="11" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" fill="#334155">email-scan.sh</text>
+    <text x="20" y="152" font-size="11" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" fill="#334155">meeting-ingest.py</text>
+
+    <text x="20" y="200" font-size="10" fill="#94a3b8">Calendar → md.</text>
+    <text x="20" y="216" font-size="10" fill="#94a3b8">Inbox → digest.</text>
+    <text x="20" y="232" font-size="10" fill="#94a3b8">Meetings → notes.</text>
+    <text x="20" y="264" font-size="10" fill="#94a3b8">Swap per platform.</text>
+  </g>
+
+  <!-- Layer 4: Execution -->
+  <g transform="translate(564,160)" filter="url(#cardShadow)">
+    <rect width="168" height="280" rx="8" fill="#ffffff" stroke="#e2e8f0"/>
+    <rect width="6" height="280" rx="3" fill="#d97706"/>
+    <text x="20" y="32" font-size="11" font-weight="600" fill="#64748b" letter-spacing="0.5">LAYER 4</text>
+    <text x="20" y="56" font-size="18" font-weight="600" fill="#0f172a">Execution</text>
+    <text x="20" y="78" font-size="11" fill="#64748b" font-style="italic">Rituals on a cadence.</text>
+
+    <text x="20" y="112" font-size="11" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" fill="#334155">/morning</text>
+    <text x="20" y="132" font-size="11" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" fill="#334155">/end-of-day</text>
+    <text x="20" y="152" font-size="11" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" fill="#334155">/weekly-review</text>
+    <text x="20" y="172" font-size="11" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" fill="#334155">/meeting-prep</text>
+    <text x="20" y="192" font-size="11" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" fill="#334155">/decide</text>
+
+    <text x="20" y="232" font-size="10" fill="#94a3b8">Where most</text>
+    <text x="20" y="248" font-size="10" fill="#94a3b8">templates stop.</text>
+    <text x="20" y="264" font-size="10" fill="#94a3b8">We don't.</text>
+  </g>
+
+  <!-- Layer 5: Feedback (highlighted) -->
+  <g transform="translate(744,160)" filter="url(#cardShadow)">
+    <rect width="192" height="280" rx="8" fill="#fef2f2" stroke="#fecaca" stroke-width="1.5"/>
+    <rect width="6" height="280" rx="3" fill="#e11d48"/>
+    <text x="20" y="32" font-size="10" font-weight="700" fill="#9f1239" letter-spacing="0.6">LAYER 5 — THE DIFFERENCE</text>
+    <text x="20" y="56" font-size="18" font-weight="600" fill="#0f172a">Feedback</text>
+    <text x="20" y="78" font-size="11" fill="#64748b" font-style="italic">Prevents rot.</text>
+
+    <text x="20" y="112" font-size="11" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" fill="#334155">/audit</text>
+    <text x="20" y="132" font-size="11" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" fill="#334155">/decide-revisit</text>
+    <text x="20" y="152" font-size="11" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" fill="#334155">/quarterly-review</text>
+
+    <text x="20" y="200" font-size="10" fill="#7f1d1d">Vault hygiene.</text>
+    <text x="20" y="216" font-size="10" fill="#7f1d1d">Prediction vs reality.</text>
+    <text x="20" y="232" font-size="10" fill="#7f1d1d">Forced rewrite of goals</text>
+    <text x="20" y="248" font-size="10" fill="#7f1d1d">when conditions shift.</text>
+  </g>
+
+  <!-- Flow arrows between layers 1→2→3→4→5 (subtle, between cards) -->
+  <g stroke="#cbd5e1" stroke-width="1.5" fill="none">
+    <path d="M192,300 L204,300" marker-end="url(#arrowhead)"/>
+    <path d="M372,300 L384,300" marker-end="url(#arrowhead)"/>
+    <path d="M552,300 L564,300" marker-end="url(#arrowhead)"/>
+    <path d="M732,300 L744,300" marker-end="url(#arrowhead)"/>
+  </g>
+
+  <!-- Footer: cadence -->
+  <g transform="translate(0,470)">
+    <rect x="24" y="0" width="912" height="90" rx="6" fill="#f1f5f9"/>
+    <text x="44" y="26" font-size="11" font-weight="600" fill="#475569" letter-spacing="0.5">CADENCE</text>
+
+    <text x="44" y="52" font-size="12" font-weight="700" fill="#0f172a">Daily</text>
+    <text x="100" y="52" font-size="12" fill="#334155">/morning · /end-of-day · /meeting-prep · /decide (when surfaced)</text>
+
+    <text x="44" y="74" font-size="12" font-weight="700" fill="#0f172a">Weekly</text>
+    <text x="100" y="74" font-size="12" fill="#334155">/weekly-review</text>
+    <text x="252" y="74" font-size="12" font-weight="700" fill="#0f172a">Monthly</text>
+    <text x="320" y="74" font-size="12" fill="#334155">/audit · /decide-revisit</text>
+    <text x="510" y="74" font-size="12" font-weight="700" fill="#0f172a">Quarterly</text>
+    <text x="582" y="74" font-size="12" fill="#334155">/quarterly-review</text>
+  </g>
+</svg>
