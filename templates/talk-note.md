@@ -46,6 +46,8 @@ tags:
 
 ## References
 
-<!-- Use `[[@citekey]]` for Obsidian-compatible citations linked to a references.bib file. -->
+<!-- Plain links work fine. Academic personalization: with the Obsidian
+Citations plugin and a `references.bib` file, `[[@citekey]]` syntax
+auto-resolves to the bibliography entry. -->
 
 -
