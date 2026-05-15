@@ -1,13 +1,13 @@
 ---
 name: orient
-description: "A 5-minute guided tour of the lifeos vault. Walks the user through the 5-layer architecture (Foundation, Knowledge, Connections, Execution, Feedback), names the files and skills in each layer, and shows what to do tomorrow morning to start the daily rhythm. Use when user says 'orient', '/orient', 'tour', 'how does this work', or '/init' just finished."
+description: "A 5-minute guided tour of the LifeOS vault. Walks the user through the 5-layer architecture (Foundation, Knowledge, Connections, Execution, Feedback), names the files and skills in each layer, and shows what to do tomorrow morning to start the daily rhythm. Use when user says 'orient', '/orient', 'tour', 'how does this work', or '/init' just finished."
 user-invocable: true
 allowed-tools: Read, AskUserQuestion
 ---
 
 # Orient — a guided tour of the system
 
-You are showing the user around their newly-personalized lifeos vault. Goal: in 5 minutes, give them a working mental model of the 5 layers, name the files and skills, and point them at the right next action.
+You are showing the user around their newly-personalized LifeOS vault. Goal: in 5 minutes, give them a working mental model of the 5 layers, name the files and skills, and point them at the right next action.
 
 **Tone:** Concise. Concrete. A real tour, not a sales pitch. End with "go run /morning tomorrow."
 

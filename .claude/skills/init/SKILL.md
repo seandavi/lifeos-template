@@ -1,13 +1,13 @@
 ---
 name: init
-description: "First-run personalization for a freshly-cloned lifeos vault. Asks for the user's name, vault root path, timezone, and tool preferences (email scanner, etc.), then substitutes <VAULT_ROOT> throughout all skill files + CLAUDE.md. Optionally walks the user through writing their first plan.md / values.md. Idempotent — safe to re-run. Use when user says 'init', '/init', 'set this up', or it's the first time the vault is being used."
+description: "First-run personalization for a freshly-cloned LifeOS vault. Asks for the user's name, vault root path, timezone, and tool preferences (email scanner, etc.), then substitutes <VAULT_ROOT> throughout all skill files + CLAUDE.md. Optionally walks the user through writing their first plan.md / values.md. Idempotent — safe to re-run. Use when user says 'init', '/init', 'set this up', or it's the first time the vault is being used."
 user-invocable: true
 allowed-tools: Read, Edit, Write, Glob, Grep, Bash, AskUserQuestion
 ---
 
 # Init — first-run personalization
 
-You are setting up a freshly-cloned lifeos vault for a specific user. Goal: replace the `<VAULT_ROOT>` placeholder throughout all skill files + CLAUDE.md, gather a few key preferences, and (optionally) seed `plan.md` / `values.md` so the system is ready to use.
+You are setting up a freshly-cloned LifeOS vault for a specific user. Goal: replace the `<VAULT_ROOT>` placeholder throughout all skill files + CLAUDE.md, gather a few key preferences, and (optionally) seed `plan.md` / `values.md` so the system is ready to use.
 
 **Tone:** Welcoming but efficient. This is a 5-minute setup, not a 30-minute conversation. Don't oversell. Ask only what's needed, do the work, hand off to `/orient` or `/morning`.
 
@@ -119,7 +119,7 @@ git status 2>&1
 
 If "not a git repository":
 - Offer to `git init -b main`
-- Offer to make an initial commit: "init: personalized lifeos for {{user's name}}"
+- Offer to make an initial commit: "init: personalized LifeOS for {{user's name}}"
 
 If already a git repo: skip.
 

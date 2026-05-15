@@ -1,4 +1,4 @@
-# lifeos
+# LifeOS
 
 **An opinionated, agentic life-OS for Claude Code.** A lived-in scaffold, not a starter kit — every file shape, skill, and review cadence comes from running it for real, not from speculation.
 
