@@ -6,7 +6,16 @@
 **X/Twitter**:
 
 **Tags**: <!-- e.g., collaborator, mentor, colleague, family, friend, hiring-contact -->
-**Domains**: <!-- e.g., cancer-center, bioconductor, NIH, informatics, AI -->
+**Domains**: <!-- e.g., team, advisor, vendor, partner-org -->
+
+<!--
+Personalize Tags / Domains for your context. Example specializations:
+- Academic researcher: cancer-center, bioconductor, NIH, informatics, AI
+- Founder / operator: portfolio, investor, customer, hire-pipeline, board
+- Open-source maintainer: project, working-group, sponsor, downstream
+The defaults above are deliberately generic; the academic flavor is what
+this template's author actually uses. Swap freely.
+-->
 
 ---
 
