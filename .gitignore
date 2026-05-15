@@ -1,0 +1,33 @@
+# macOS
+.DS_Store
+**/.DS_Store
+
+# Editor / IDE volatile state
+.obsidian/workspace.json
+.idea/
+.vscode/
+
+# Claude Code worktrees and ephemeral artifacts
+.claude/worktrees/
+.playwright-mcp/
+
+# Word lock files
+~$*
+
+# Quarto rendered support directories
+*_files/
+
+# User-specific (commit your structure, not your content, if you publish)
+# Uncomment if you want to keep personal entries out of a public fork:
+# personal/
+# journal/
+# decisions/
+# people/
+# hiring/
+
+# Build artifacts
+node_modules/
+dist/
+build/
+__pycache__/
+*.pyc
