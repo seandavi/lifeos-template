@@ -172,8 +172,33 @@ Everything is editable. A few specific levers:
 
 - **Skill names.** Flat names (`/morning`, `/audit`) by default. If you mix this vault with other skill collections and worry about collisions, rename them in `.claude/skills/<name>/SKILL.md`'s `name:` field — `lifeos-morning`, or anything you prefer. Plugin-style `lifeos:*` namespacing is the right pattern if you eventually distribute this as a Claude Code plugin.
 - **Cadence.** The weekly review fires on Fridays in the default schedule. Move it to Sunday if that fits better. Some people prefer monthly over weekly; that works too — just delete `/weekly-review` and rely on `/audit` + `/quarterly-review`.
-- **Layers.** If you don't need the `wiki/` (structured domain knowledge) or `raw/` (source ingest), delete them. The other skills don't depend on them.
+- **Layers.** If you don't need the `wiki/` (structured domain knowledge) or `raw/` (source ingest), delete them. The other skills don't depend on them. (See "Extending LifeOS" below for what they're *for*.)
 - **Diary.** `personal/diary.md` is optional. If you don't want it, delete the file and remove Step 3 from the morning skill.
+
+## Extending LifeOS
+
+LifeOS ships with the daily/weekly/quarterly rhythm and the workhorse layers (`notes/`, `decisions/`, `people/`, `projects/`). Beyond that, the vault is a markdown directory tree — you can layer in any pattern that fits how you work. The empty `wiki/` and `raw/` directories are an invitation, not a requirement.
+
+### The wiki layer (Karpathy's raw → wiki pattern)
+
+`wiki/` and `raw/` are present but unused by any shipped skill. The intended pattern, modeled on [Andrej Karpathy's LLM Wiki gist](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f):
+
+1. Drop source material (papers, transcripts, articles) into `raw/<domain>/`.
+2. Use Claude Code (or any LLM CLI) with a domain-specific prompt to extract structured entries into `wiki/<domain>/entities/`, `wiki/<domain>/concepts/`, `wiki/<domain>/sources/`.
+3. Cross-link entries via `[[wiki-links]]`. Over time, the wiki becomes a queryable knowledge graph for that domain.
+
+This isn't shipped as a skill because wiki ingest is fundamentally bespoke per domain — a generic prompt either does nothing useful or imposes a schema that doesn't fit your work. Write your own `/wiki-ingest` skill once you know what your domain's schema should be. If `wiki/` and `raw/` aren't useful to you, delete them — no other skill depends on them.
+
+This is the canonical example of how LifeOS extends: pick a pattern from the field, decide what fits your work, add a directory and (optionally) a skill, leave the rest of the system alone.
+
+### Other patterns worth layering in
+
+- **[Zettelkasten](https://zettelkasten.de/)** (Niklas Luhmann; popularized by [Sönke Ahrens](https://takesmartnotes.com/)) — atomic notes with strict ID conventions and dense linking. The `notes/` directory already gestures at this; add a `notes/MOC/` (Maps of Content) sub-pattern if you want stricter Zettelkasten discipline.
+- **[PARA](https://fortelabs.com/blog/para/)** (Tiago Forte) — Projects / Areas / Resources / Archive. The template uses Projects and a lightweight Areas notion via `now.md`. Full PARA adds `areas/` and `archive/` directories and adapts `/weekly-review` to scan them.
+- **[Evergreen notes](https://notes.andymatuschak.org/Evergreen_notes)** (Andy Matuschak) — concept-oriented notes that develop over time rather than dated journal entries. Complementary to (not a replacement for) the daily journal.
+- **[Digital gardens](https://maggieappleton.com/garden-history)** (Maggie Appleton) — public, linked notes published as a website. Tools like [Quartz](https://quartz.jzhao.xyz/) or Obsidian Publish can publish a LifeOS vault directly with minimal config.
+
+The pattern across all of these: pick what fits how you actually think; ignore the rest.
 
 ## Credit
 
