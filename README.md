@@ -144,6 +144,19 @@ For visual graph: keep Obsidian open alongside as a graph-viewer-only.
 
 Works perfectly. The wiki-links are just `[[text]]` patterns; grep + project-wide search gets you 90% of the connection navigation.
 
+## Dashboards & task views (optional Obsidian layer)
+
+If you use Obsidian, LifeOS ships an **opt-in dashboard layer** — native [Bases](https://help.obsidian.md/bases) databases plus a [Tasks](https://publish.obsidian.md/tasks/) action view — that turns your notes and checkboxes into live, filterable dashboards without leaving markdown:
+
+- **`dashboards/Home.md`** — a command-center note that embeds the views below.
+- **Active projects · people directory · budget pipeline · output pipeline** — `dashboards/*.base`, driven entirely by note frontmatter. Edit a note, the dashboards follow.
+- **Action dashboard** — open `- [ ]` items across `inbox` + `journal`, grouped and dated (`dashboards/tasks-dashboard.md`).
+- **Frontmatter linter** — `uv run scripts/vault_lint.py` validates notes against `reference/frontmatter-spec.yaml` (report-only) and flags Active projects whose status has gone stale.
+
+One-command setup: `bash scripts/setup-obsidian.sh`. The whole layer is optional and **degrades to plain markdown** — nothing else in LifeOS depends on it. Coding agents can query the dashboards headlessly via the `obsidian` CLI (`obsidian base:query`).
+
+**→ Full guide: [`docs/obsidian-setup.md`](docs/obsidian-setup.md)**
+
 ## Scheduling skills
 
 By default, the skills are user-invoked (`/morning`, `/weekly-review`, etc.). To run them automatically — for example, nightly `/meeting-prep` while your laptop is closed, or Friday `/weekly-review` at 4pm — use **Claude Code Routines** (cloud-scheduled agents) or `/loop` for in-session repetition.
