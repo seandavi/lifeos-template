@@ -10,6 +10,8 @@ A "life-OS" is a personal operating system in markdown: a vault for journaling, 
 
 **This is an artifact, not a project.** Fork freely (CC BY 4.0). Issues and PRs are handled best-effort -- open one if something's broken or you've got an idea you want to share, but no SLA. If something here is wrong for your life, don't wait on me and upstream.
 
+* TLDR: [Jump to Quick Start](#quick-start)
+
 ---
 
 ## See it in action
