@@ -1,0 +1,35 @@
+filters:
+  and:
+    - file.folder == "projects"
+views:
+  - type: table
+    name: Active
+    filters:
+      and:
+        - status == "Active"
+    order:
+      - file.name
+      - status
+      - priority
+      - activity_level
+      - updated
+    sort:
+      - property: updated
+        direction: DESC
+  - type: table
+    name: All by status
+    order:
+      - file.name
+      - status
+      - priority
+      - type
+      - updated
+    sort:
+      - property: status
+        direction: ASC
+  - type: cards
+    name: Cards
+    order:
+      - file.name
+      - status
+      - domains

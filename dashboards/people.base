@@ -1,0 +1,30 @@
+filters:
+  and:
+    - file.folder == "people"
+    - type == "person"
+views:
+  - type: table
+    name: Directory
+    order:
+      - file.name
+      - role
+      - organization
+      - domains
+    sort:
+      - property: file.name
+        direction: ASC
+  - type: table
+    name: By organization
+    order:
+      - file.name
+      - organization
+      - role
+    sort:
+      - property: organization
+        direction: ASC
+  - type: cards
+    name: Cards
+    order:
+      - file.name
+      - role
+      - organization
