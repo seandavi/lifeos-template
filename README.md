@@ -1,5 +1,9 @@
 # LifeOS
 
+[![License: CC BY 4.0](https://img.shields.io/badge/License-CC_BY_4.0-lightgrey?style=flat-square)](LICENSE)
+[![Built for Claude Code](https://img.shields.io/badge/Built_for-Claude_Code-d97757?style=flat-square)](https://claude.com/claude-code)
+[![Obsidian: Bases + Tasks](https://img.shields.io/badge/Obsidian-Bases_%2B_Tasks-7C3AED?style=flat-square&logo=obsidian&logoColor=white)](docs/obsidian-setup.md)
+
 **An opinionated, agentic life-OS for Claude Code.** A lived-in scaffold, not a starter kit — every file shape, skill, and review cadence comes from running it for real, not from speculation.
 
 A "life-OS" is a personal operating system in markdown: a vault for journaling, decisions, projects, notes, and people — paired with daily, weekly, and quarterly review skills that keep it from rotting.
