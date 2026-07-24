@@ -1,0 +1,67 @@
+# Frontmatter spec for a LifeOS vault. Consumed by scripts/vault_lint.py.
+#
+# Classification is FOLDER-FIRST: a note in one of the folders below is validated
+# against that folder's schema regardless of its own `type:` field (in projects,
+# `type:` is a sub-category like product/internal-tool, not the schema). Notes
+# outside these folders fall back to their frontmatter `type:` field.
+#
+# This is DATA, not code — edit here to change the rules. Everything is optional:
+# nothing in LifeOS requires Obsidian or this linter; they're an opt-in layer.
+#
+# Per type:
+#   required     - keys that MUST be present (missing -> ERROR)
+#   recommended  - keys that SHOULD be present (missing -> WARN)
+#   list_fields  - keys that must be YAML lists if present (scalar -> ERROR)
+#   enums        - {key: [allowed values]} (out-of-range -> ERROR)
+#   stale_days   - for a project: status==Active and `updated` older than this -> WARN
+
+folder_type:
+  people: person
+  projects: project
+  notes: note
+  decisions: decision
+  research: research
+  talk-notes: talk-note
+
+types:
+  person:
+    required: [type]
+    recommended: [role, organization]
+    list_fields: [tags, domains, aliases]
+    enums: {}
+
+  project:
+    required: [title, status, type]
+    recommended: [priority, updated, domains]
+    list_fields: [domains, tags, collaborators, deliverables, artifacts]
+    enums:
+      status: [Planning, Active, "On Hold", Completed, Idea]
+      priority: [high, medium, low]
+      effort: [ongoing, major, minor, one-time]
+      activity_level: [high, medium, low, exploratory]
+      budget_status: [funded, seeking, unfunded, negotiating]
+    stale_days: 60
+
+  note:
+    required: []
+    recommended: [tags]
+    list_fields: [tags]
+    enums: {}
+
+  decision:
+    required: []
+    recommended: [status]
+    list_fields: [tags]
+    enums: {}
+
+  research:
+    required: []
+    recommended: []
+    list_fields: [tags, domains]
+    enums: {}
+
+  talk-note:
+    required: []
+    recommended: []
+    list_fields: [tags]
+    enums: {}

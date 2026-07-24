@@ -1,0 +1,23 @@
+filters:
+  and:
+    - file.folder == "projects"
+views:
+  - type: table
+    name: Output pipeline
+    filters:
+      or:
+        - deliverables.contains("paper")
+        - deliverables.contains("post")
+        - deliverables.contains("talk")
+        - artifacts.contains("paper")
+        - file.name.contains("paper")
+        - file.name.contains("manuscript")
+    order:
+      - file.name
+      - status
+      - deliverables
+      - artifacts
+      - updated
+    sort:
+      - property: status
+        direction: ASC

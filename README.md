@@ -121,11 +121,16 @@ Obsidian renders `[[wiki-links]]` natively, shows the connection graph, and work
    - Enable: **Graph view** (the wiki-links pay off here)
    - Enable: **Backlinks**
    - Disable: **File recovery** (the git history serves this purpose better)
-4. Recommended community plugins (optional):
-   - **Dataview** — query the vault as a database (e.g., list all open decisions, all "Active" projects)
+4. **Optional dashboard layer** — this template ships native **Bases** dashboards (active projects, people directory, budget + output pipelines) plus a **Tasks** action view and a frontmatter linter. It's opt-in and degrades to plain markdown. One command to set up:
+   ```bash
+   bash scripts/setup-obsidian.sh
+   ```
+   See **[`docs/obsidian-setup.md`](docs/obsidian-setup.md)** for what it adds and why it prefers native Bases over Dataview.
+5. Other useful community plugins (optional):
    - **Calendar** — sidebar calendar that opens daily notes
    - **Periodic Notes** — extends Daily Notes with weekly/monthly/quarterly variants matching this template's structure
-5. `.obsidian/workspace.json` is gitignored (volatile UI state — changes every time you close Obsidian). The rest of `.obsidian/` (your config + graph settings) is tracked.
+   - **Dataview** — only if you want inline queries Bases can't express; the shipped dashboards use Bases (native, faster, no third-party surface)
+6. `.obsidian/workspace.json` is gitignored (volatile UI state — changes every time you close Obsidian). The rest of `.obsidian/` (your config + graph settings) is tracked.
 
 ### VS Code / Cursor / Zed
 

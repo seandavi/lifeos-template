@@ -1,0 +1,33 @@
+filters:
+  and:
+    - file.folder == "projects"
+views:
+  - type: table
+    name: Budget pipeline
+    filters:
+      or:
+        - budget_status == "funded"
+        - budget_status == "seeking"
+        - budget_status == "negotiating"
+    order:
+      - file.name
+      - budget_source
+      - budget_amount
+      - budget_status
+      - status
+    sort:
+      - property: budget_status
+        direction: ASC
+  - type: table
+    name: All with budget set
+    filters:
+      or:
+        - budget_status == "funded"
+        - budget_status == "seeking"
+        - budget_status == "negotiating"
+        - budget_status == "unfunded"
+    order:
+      - file.name
+      - budget_status
+      - budget_amount
+      - status
