@@ -1,0 +1,8 @@
+{
+  "authors": ["your_github_username"],
+  "topics": ["your_grant_id", "project_topic"],
+  "repos": {
+    "org/specific-repo": { "include_all_authors": true },
+    "org/forked-repo": { "allow_fork": true }
+  }
+}

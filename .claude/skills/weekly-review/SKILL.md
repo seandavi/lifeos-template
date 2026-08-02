@@ -47,6 +47,7 @@ Run these in parallel:
 
 5. **Pull GitHub state** (if `gh` is authenticated):
    ```bash
+   python3 <VAULT_ROOT>/scripts/github-activity-sync.py --vault <VAULT_ROOT> --days 7
    gh issue list --state open --assignee @me --limit 30
    gh pr list --state open --author @me --limit 20
    ```
