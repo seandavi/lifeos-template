@@ -13,6 +13,20 @@ A forensic health check on the vault at `<VAULT_ROOT>`. Detect decay before it b
 
 ---
 
+## Step 0: Check for the `obsidian` CLI (optional accelerator)
+
+```bash
+command -v obsidian && obsidian vault info=name
+```
+
+If both succeed, the link-graph checks below (wiki-link health, orphan notes) can
+use Obsidian's *parsed* graph instead of regex — exact results, no false
+positives. See `.claude/skills/obsidian-cli/SKILL.md`. If the CLI is absent or
+the app is closed, use the grep/Glob versions as written; results are equivalent,
+just noisier. Never block the audit on this.
+
+---
+
 ## Step 1: Run checks in parallel
 
 Use Bash + Read + Glob to collect signals at once.
@@ -54,6 +68,15 @@ Read `inbox.md`. Flag candidates:
 - OVERDUE markers
 
 ### Wiki-link health:
+
+With the `obsidian` CLI (preferred when available — parsed graph, exact):
+```bash
+obsidian unresolved verbose   # [[links]] with no target note
+obsidian orphans              # notes nothing links to
+obsidian deadends             # notes with no outgoing links
+```
+
+Filesystem fallback:
 ```bash
 grep -rohE '\[\[([^]]+)\]\]' <VAULT_ROOT>/{notes,research,decisions,journal,people}/ 2>/dev/null | sort -u
 ```
@@ -62,6 +85,8 @@ For each unique `[[X]]`, check whether `X.md` exists in `notes/`, `research/`, `
 Report broken links — but treat as low-severity unless count is large (per CLAUDE.md: unresolved `[[name]]` is "something worth writing later, not an error").
 
 ### Orphan notes:
+
+Covered by `obsidian orphans` above when the CLI is available. Fallback:
 ```
 Glob: <VAULT_ROOT>/notes/*.md
 ```
