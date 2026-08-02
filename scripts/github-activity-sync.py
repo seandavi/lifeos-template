@@ -6,6 +6,10 @@ import shutil
 import subprocess
 import glob
 from datetime import datetime, timezone
+try:
+    from zoneinfo import ZoneInfo
+except ImportError:
+    ZoneInfo = None
 import re
 
 def sanitize_text(text):
@@ -13,6 +17,8 @@ def sanitize_text(text):
     text = re.sub(r'\[\[.*?\]\]', '', text)
     # Remove duration tags (e.g. (1h), (30m), (1h30m))
     text = re.sub(r'\(\d+[hm](?:\d+[hm])?\)', '', text)
+    # Escape bare duration tokens that progress-report.py recognizes (e.g., 24h -> 24 h)
+    text = re.sub(r'\b(\d+(?:\.\d+)?)([hm])\b', r'\1 \2', text)
     # Remove private tags
     text = text.replace('%private', '')
     return text.strip()
@@ -192,9 +198,17 @@ def main():
     topics = config.get("topics", [])
     explicit_repos = config.get("repos", {})
 
+    vault_tz_str = config.get("timezone", "UTC")
+    vault_tz = timezone.utc
+    if vault_tz_str != "UTC" and ZoneInfo is not None:
+        try:
+            vault_tz = ZoneInfo(vault_tz_str)
+        except Exception as e:
+            print(f"Warning: Invalid timezone '{vault_tz_str}', falling back to UTC. ({e})", file=sys.stderr)
+
     projects_by_topic = get_projects(vault_root)
     
-    since_date = (datetime.now(timezone.utc).astimezone().replace(microsecond=0) 
+    since_date = (datetime.now(vault_tz).replace(microsecond=0) 
                   .replace(hour=0, minute=0, second=0) 
                   .isoformat())
     # simple formatting for GitHub API
@@ -269,15 +283,20 @@ def main():
                  unattributable.append(f"- Repo: {full_name} (Explicitly configured) - No topic assigned to map to project")
             continue
             
+        explicit_project = repo_data["config"].get("project")
         explicit_topic = repo_data["config"].get("topic")
         explicit_projects = projects_by_topic.get(explicit_topic, []) if explicit_topic else []
         
-        if len(project_names) > 1 and len(explicit_projects) != 1:
-             unattributable.append(f"- Repo: {full_name} (Topics: {', '.join(repo_topics)}) - Matches multiple projects ({', '.join(project_names)}), but no explicit topic configured or explicit topic matches multiple projects.")
+        if explicit_project:
+             if os.path.exists(os.path.join(vault_root, "projects", f"{explicit_project}.md")):
+                  project_name = explicit_project
+             else:
+                  unattributable.append(f"- Repo: {full_name} (Explicit config) - Project '{explicit_project}' does not exist.")
+                  continue
+        elif len(project_names) > 1 and len(explicit_projects) != 1:
+             unattributable.append(f"- Repo: {full_name} (Topics: {', '.join(repo_topics)}) - Matches multiple projects ({', '.join(project_names)}). Configure an explicit 'project' override.")
              continue
-             
-        # Resolve to a single project name.
-        if len(explicit_projects) == 1:
+        elif len(explicit_projects) == 1:
              project_name = explicit_projects[0]
         else:
              project_name = list(project_names)[0]
@@ -302,7 +321,7 @@ def main():
                 
                 # Convert to local timezone
                 utc_str = commit["commit"]["author"]["date"].replace("Z", "+00:00")
-                date_str = datetime.fromisoformat(utc_str).astimezone().isoformat()[:10]
+                date_str = datetime.fromisoformat(utc_str).astimezone(vault_tz).isoformat()[:10]
                 
                 # Check duplication
                 filepath = get_date_path(vault_root, date_str)
@@ -328,7 +347,7 @@ def main():
                 number = pr["number"]
                 title = sanitize_text(pr["title"])
                 utc_str = created_at.replace("Z", "+00:00")
-                date_str = datetime.fromisoformat(utc_str).astimezone().isoformat()[:10]
+                date_str = datetime.fromisoformat(utc_str).astimezone(vault_tz).isoformat()[:10]
                 
                 filepath = get_date_path(vault_root, date_str)
                 marker = f"Created {full_name} PR #{number}"
@@ -358,7 +377,7 @@ def main():
                                     continue
                                     
                                 utc_str = review["submitted_at"].replace("Z", "+00:00")
-                                review_date = datetime.fromisoformat(utc_str).astimezone().isoformat()[:10]
+                                review_date = datetime.fromisoformat(utc_str).astimezone(vault_tz).isoformat()[:10]
                                 filepath = get_date_path(vault_root, review_date)
                                 marker = f"<!-- REVIEW_ID:{review['id']} -->"
                                 if not file_contains(filepath, marker):
