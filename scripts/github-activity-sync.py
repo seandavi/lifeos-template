@@ -8,13 +8,32 @@ import glob
 from datetime import datetime, timezone
 import re
 
-def run_gh_api(endpoint, method="GET", body=None):
+def run_gh_api(endpoint, method="GET", body=None, paginate=False):
     cmd = ["gh", "api", endpoint, "-X", method]
+    if paginate:
+        cmd.append("--paginate")
+        if endpoint.startswith("search/"):
+            cmd.extend(["-q", ".items[]"])
+        else:
+            cmd.extend(["-q", ".[]"])
     if body:
         cmd.extend(["-f", f"query={json.dumps(body)}"])
     try:
         result = subprocess.run(cmd, capture_output=True, text=True, check=True)
-        return json.loads(result.stdout)
+        if not result.stdout.strip():
+            if paginate and endpoint.startswith("search/"): return {"items": []}
+            return [] if paginate else {}
+        
+        if paginate:
+            items = []
+            for line in result.stdout.strip().split('\n'):
+                if line.strip():
+                    items.append(json.loads(line))
+            if endpoint.startswith("search/"):
+                return {"items": items}
+            return items
+        else:
+            return json.loads(result.stdout)
     except subprocess.CalledProcessError as e:
         print(f"Error calling GitHub API {endpoint}: {e.stderr}", file=sys.stderr)
         return None
@@ -66,23 +85,49 @@ def file_contains(filepath, text):
         content = f.read()
         return text in content
 
+def check_duplicate_effort(filepath, project_name):
+    if not os.path.exists(filepath):
+        return False
+    with open(filepath, 'r', encoding='utf-8') as f:
+        content = f.read()
+    for line in content.splitlines():
+        if f"[[{project_name}]]" in line and "(0h)" not in line:
+            return True
+    return False
+
 def append_to_journal(vault_root, date_str, line):
     filepath = get_date_path(vault_root, date_str)
     if not filepath:
         return
     
     if not os.path.exists(filepath):
-        # Create with frontmatter if it doesn't exist
         with open(filepath, 'w', encoding='utf-8') as f:
-            f.write(f"---\ntitle: {date_str}\n---\n\n# {date_str}\n\n")
+            f.write(f"---\ntitle: {date_str}\n---\n\n# {date_str}\n\n## Log\n\n")
             
-    with open(filepath, 'a', encoding='utf-8') as f:
-        if os.path.getsize(filepath) > 0:
-            # Ensure it ends with a newline before appending
-            with open(filepath, 'r', encoding='utf-8') as rf:
-                if not rf.read().endswith("\n"):
-                    f.write("\n")
-        f.write(f"{line}\n")
+    with open(filepath, 'r+', encoding='utf-8') as f:
+        content = f.read()
+        
+        if "## Log" not in content:
+            if not content.endswith('\n'):
+                f.write("\n")
+            f.write("\n## Log\n\n")
+            content = content + ("\n" if not content.endswith('\n') else "") + "\n## Log\n\n"
+        
+        lines = content.splitlines()
+        log_idx = -1
+        next_heading_idx = len(lines)
+        for i, l in enumerate(lines):
+            if l.startswith("## Log"):
+                log_idx = i
+            elif log_idx != -1 and l.startswith("## "):
+                next_heading_idx = i
+                break
+                
+        lines.insert(next_heading_idx, line)
+        
+        f.seek(0)
+        f.truncate()
+        f.write("\n".join(lines) + "\n")
 
 def main():
     import argparse
@@ -135,7 +180,7 @@ def main():
 
     # 1. Discover by topic
     for topic in topics:
-        search_results = run_gh_api(f"search/repositories?q=topic:{topic}")
+        search_results = run_gh_api(f"search/repositories?q=topic:{topic}", paginate=True)
         if search_results and "items" in search_results:
             for repo in search_results["items"]:
                 full_name = repo["full_name"]
@@ -165,12 +210,14 @@ def main():
         include_all = repo_data["config"].get("include_all_authors", False)
 
         # Fetch Commits
-        commits = run_gh_api(f"repos/{full_name}/commits?since={since_date}")
+        commits = run_gh_api(f"repos/{full_name}/commits?since={since_date}", paginate=True)
         if commits:
             for commit in commits:
                 if not include_all:
                     author_login = commit.get("author", {}).get("login") if commit.get("author") else None
-                    if author_login not in authors:
+                    author_name = commit.get("commit", {}).get("author", {}).get("name")
+                    author_email = commit.get("commit", {}).get("author", {}).get("email")
+                    if not (author_login in authors or author_name in authors or author_email in authors):
                         continue
                 
                 sha = commit["sha"][:7]
@@ -180,11 +227,12 @@ def main():
                 # Check duplication
                 filepath = get_date_path(vault_root, date_str)
                 if not file_contains(filepath, sha):
-                    line = f"- [[{project_name}]] Commit {sha}: {msg} (0h)"
+                    confirm_str = " <!-- CONFIRM DUPLICATE? -->" if check_duplicate_effort(filepath, project_name) else ""
+                    line = f"- [[{project_name}]] Commit {sha}: {msg} (0h){confirm_str}"
                     append_to_journal(vault_root, date_str, line)
 
         # Fetch PRs Created
-        pulls = run_gh_api(f"repos/{full_name}/pulls?state=all&sort=created&direction=desc")
+        pulls = run_gh_api(f"repos/{full_name}/pulls?state=all&sort=created&direction=desc", paginate=True)
         if pulls:
             for pr in pulls:
                 created_at = pr["created_at"]
@@ -200,36 +248,44 @@ def main():
                 date_str = created_at[:10]
                 
                 filepath = get_date_path(vault_root, date_str)
-                marker = f"{full_name} PR #{number}"
+                marker = f"Created {full_name} PR #{number}"
                 if not file_contains(filepath, marker):
-                    line = f"- [[{project_name}]] Created PR #{number} in {full_name}: {title} (0h)"
+                    confirm_str = " <!-- CONFIRM DUPLICATE? -->" if check_duplicate_effort(filepath, project_name) else ""
+                    line = f"- [[{project_name}]] Created {full_name} PR #{number}: {title} (0h){confirm_str}"
                     append_to_journal(vault_root, date_str, line)
                     
-        # Fetch PR Reviews (this requires iterating PRs which is expensive, but for recent it's okay)
-        # We can use search issues for this author's reviews
-        if not include_all and authors:
-            for author in authors:
-                search_reviews = run_gh_api(f"search/issues?q=repo:{full_name}+is:pr+reviewed-by:{author}+updated:>={since_date[:10]}")
-                if search_reviews and "items" in search_reviews:
-                    for pr in search_reviews["items"]:
-                        number = pr["number"]
-                        title = pr["title"]
-                        # Just append to today since review date is hard to pin down without GraphQL or many REST calls
-                        today_str = datetime.now(timezone.utc).isoformat()[:10]
-                        filepath = get_date_path(vault_root, today_str)
-                        marker = f"Reviewed {full_name} PR #{number}"
-                        if not file_contains(filepath, marker):
-                            line = f"- [[{project_name}]] Reviewed PR #{number} in {full_name}: {title} (0h)"
-                            append_to_journal(vault_root, today_str, line)
+        # Fetch PR Reviews
+        if authors or include_all:
+            updated_prs = run_gh_api(f"search/issues?q=repo:{full_name}+is:pr+updated:>={since_date[:10]}", paginate=True)
+            if updated_prs and "items" in updated_prs:
+                for pr in updated_prs["items"]:
+                    number = pr["number"]
+                    reviews = run_gh_api(f"repos/{full_name}/pulls/{number}/reviews", paginate=True)
+                    if reviews:
+                        for review in reviews:
+                            if review.get("submitted_at") and review["submitted_at"] >= since_date:
+                                reviewer_login = review.get("user", {}).get("login")
+                                if not include_all and reviewer_login not in authors:
+                                    continue
+                                    
+                                review_date = review["submitted_at"][:10]
+                                filepath = get_date_path(vault_root, review_date)
+                                marker = f"Reviewed {full_name} PR #{number}"
+                                if not file_contains(filepath, marker):
+                                    confirm_str = " <!-- CONFIRM DUPLICATE? -->" if check_duplicate_effort(filepath, project_name) else ""
+                                    line = f"- [[{project_name}]] Reviewed {full_name} PR #{number}: {pr['title']} (0h){confirm_str}"
+                                    append_to_journal(vault_root, review_date, line)
 
+    unattributable_path = os.path.join(vault_root, 'unattributable.md')
     if unattributable:
-        unattributable_path = os.path.join(vault_root, 'unattributable.md')
         with open(unattributable_path, 'w', encoding='utf-8') as f:
             f.write("# Unattributable GitHub Repositories\n\n")
             f.write("The following repositories were discovered but could not be mapped to a LifeOS project. Ensure your projects have a `grant_id` frontmatter that matches the repository's GitHub topic.\n\n")
             for item in unattributable:
                 f.write(f"{item}\n")
                 print(item, file=sys.stderr)
+    elif os.path.exists(unattributable_path):
+        os.remove(unattributable_path)
         
 if __name__ == "__main__":
     main()
