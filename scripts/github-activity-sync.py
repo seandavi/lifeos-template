@@ -72,7 +72,7 @@ def get_projects(vault_root):
             with open(path, 'r', encoding='utf-8') as f:
                 fm = parse_frontmatter(f.read())
                 if 'grant_id' in fm:
-                    projects_by_topic[fm['grant_id']] = name
+                    projects_by_topic.setdefault(fm['grant_id'], []).append(name)
         except Exception:
             pass
     return projects_by_topic
@@ -119,8 +119,15 @@ def append_to_journal(vault_root, date_str, line):
         return
     
     if not os.path.exists(filepath):
-        with open(filepath, 'w', encoding='utf-8') as f:
-            f.write(f"---\ntitle: {date_str}\n---\n\n# {date_str}\n\n## Log\n\n")
+        template_path = os.path.join(vault_root, 'templates', 'daily-journal.md')
+        if os.path.exists(template_path):
+            with open(template_path, 'r', encoding='utf-8') as tf:
+                content = tf.read().replace('{{DAY, MONTH D, YYYY}}', date_str)
+            with open(filepath, 'w', encoding='utf-8') as f:
+                f.write(content)
+        else:
+            with open(filepath, 'w', encoding='utf-8') as f:
+                f.write(f"---\ntitle: {date_str}\n---\n\n# {date_str}\n\n## Log\n\n")
             
     with open(filepath, 'r+', encoding='utf-8') as f:
         content = f.read()
@@ -141,7 +148,15 @@ def append_to_journal(vault_root, date_str, line):
                 next_heading_idx = i
                 break
                 
-        lines.insert(next_heading_idx, line)
+        insert_idx = next_heading_idx
+        while insert_idx > log_idx + 1:
+            prev_line = lines[insert_idx - 1].strip()
+            if not prev_line or prev_line == '---':
+                insert_idx -= 1
+            else:
+                break
+                
+        lines.insert(insert_idx, line)
         
         f.seek(0)
         f.truncate()
@@ -245,7 +260,7 @@ def main():
         project_names = set()
         for t in repo_topics:
             if t in projects_by_topic:
-                project_names.add(projects_by_topic[t])
+                project_names.update(projects_by_topic[t])
                 
         if not project_names:
             if repo_topics:
@@ -254,13 +269,16 @@ def main():
                  unattributable.append(f"- Repo: {full_name} (Explicitly configured) - No topic assigned to map to project")
             continue
             
-        if len(project_names) > 1 and "topic" not in repo_data["config"]:
-             unattributable.append(f"- Repo: {full_name} (Topics: {', '.join(repo_topics)}) - Matches multiple projects ({', '.join(project_names)}), but no explicit topic configured.")
+        explicit_topic = repo_data["config"].get("topic")
+        explicit_projects = projects_by_topic.get(explicit_topic, []) if explicit_topic else []
+        
+        if len(project_names) > 1 and len(explicit_projects) != 1:
+             unattributable.append(f"- Repo: {full_name} (Topics: {', '.join(repo_topics)}) - Matches multiple projects ({', '.join(project_names)}), but no explicit topic configured or explicit topic matches multiple projects.")
              continue
              
         # Resolve to a single project name.
-        if "topic" in repo_data["config"] and repo_data["config"]["topic"] in projects_by_topic:
-             project_name = projects_by_topic[repo_data["config"]["topic"]]
+        if len(explicit_projects) == 1:
+             project_name = explicit_projects[0]
         else:
              project_name = list(project_names)[0]
 
@@ -281,7 +299,10 @@ def main():
                 
                 sha = commit["sha"][:7]
                 msg = sanitize_text(commit["commit"]["message"].split('\n')[0])
-                date_str = commit["commit"]["author"]["date"][:10]
+                
+                # Convert to local timezone
+                utc_str = commit["commit"]["author"]["date"].replace("Z", "+00:00")
+                date_str = datetime.fromisoformat(utc_str).astimezone().isoformat()[:10]
                 
                 # Check duplication
                 filepath = get_date_path(vault_root, date_str)
@@ -306,7 +327,8 @@ def main():
                         
                 number = pr["number"]
                 title = sanitize_text(pr["title"])
-                date_str = created_at[:10]
+                utc_str = created_at.replace("Z", "+00:00")
+                date_str = datetime.fromisoformat(utc_str).astimezone().isoformat()[:10]
                 
                 filepath = get_date_path(vault_root, date_str)
                 marker = f"Created {full_name} PR #{number}"
@@ -330,10 +352,13 @@ def main():
                         for review in reviews:
                             if review.get("submitted_at") and review["submitted_at"] >= since_date:
                                 reviewer_login = review.get("user", {}).get("login")
-                                if not include_all and reviewer_login not in authors:
+                                reviewer_name = review.get("user", {}).get("name")
+                                reviewer_email = review.get("user", {}).get("email")
+                                if not include_all and not (reviewer_login in authors or reviewer_name in authors or reviewer_email in authors):
                                     continue
                                     
-                                review_date = review["submitted_at"][:10]
+                                utc_str = review["submitted_at"].replace("Z", "+00:00")
+                                review_date = datetime.fromisoformat(utc_str).astimezone().isoformat()[:10]
                                 filepath = get_date_path(vault_root, review_date)
                                 marker = f"<!-- REVIEW_ID:{review['id']} -->"
                                 if not file_contains(filepath, marker):
