@@ -161,6 +161,17 @@ One-command setup: `bash scripts/setup-obsidian.sh`. The whole layer is optional
 
 **→ Full guide: [`docs/obsidian-setup.md`](docs/obsidian-setup.md)**
 
+## GitHub Activity Connector (Optional)
+
+The GitHub Activity Connector automatically ingests your GitHub commits and PR reviews into your daily journal files as zero-duration milestones. This allows them to be seamlessly picked up by the structured progress tracking system without manual entry.
+
+To enable it:
+1. Ensure the `gh` CLI is installed and authenticated.
+2. Create a `github-config.json` file in the root of your vault based on the example in [`examples/github-config.json`](examples/github-config.json).
+3. Ensure your projects have `grant_id` frontmatter that matches your GitHub topics.
+
+The connector runs automatically as part of the `/weekly-review` skill. Unattributable repositories will be listed in `unattributable.md` for manual review.
+
 ## Scheduling skills
 
 By default, the skills are user-invoked (`/morning`, `/weekly-review`, etc.). To run them automatically — for example, nightly `/meeting-prep` while your laptop is closed, or Friday `/weekly-review` at 4pm — use **Claude Code Routines** (cloud-scheduled agents) or `/loop` for in-session repetition.

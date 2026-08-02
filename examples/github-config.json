@@ -1,0 +1,9 @@
+{
+  "timezone": "America/New_York",
+  "authors": ["your_github_username"],
+  "topics": ["your_grant_id", "project_topic"],
+  "repos": {
+    "org/specific-repo": { "project": "my_project_file", "include_all_authors": true },
+    "org/forked-repo": { "topic": "your_grant_id", "allow_fork": true }
+  }
+}
