@@ -13,7 +13,17 @@ You are running the Friday weekly review for the life-OS vault at `<VAULT_ROOT>`
 
 ---
 
-## Step 1: Determine the week + load context
+## Step 1: Pre-requisites (Sequential)
+
+1. **Sync GitHub Activity:**
+   ```bash
+   python3 <VAULT_ROOT>/scripts/github-activity-sync.py --vault <VAULT_ROOT> --days 7
+   ```
+   Wait for this to complete before gathering context, to ensure journal logs are up to date.
+
+---
+
+## Step 2: Determine the week + load context
 
 Run these in parallel:
 
@@ -47,7 +57,6 @@ Run these in parallel:
 
 5. **Pull GitHub state** (if `gh` is authenticated):
    ```bash
-   python3 <VAULT_ROOT>/scripts/github-activity-sync.py --vault <VAULT_ROOT> --days 7
    gh issue list --state open --assignee @me --limit 30
    gh pr list --state open --author @me --limit 20
    ```
@@ -56,7 +65,7 @@ Get all loaded before synthesizing.
 
 ---
 
-## Step 2: Synthesize four lenses
+## Step 3: Synthesize four lenses
 
 Build internal notes on:
 
@@ -85,7 +94,7 @@ Build internal notes on:
 
 ---
 
-## Step 3: Update now.md
+## Step 4: Update now.md
 
 Edit `<VAULT_ROOT>/now.md`:
 
@@ -99,7 +108,7 @@ Show the diff before writing.
 
 ---
 
-## Step 4: Inbox triage
+## Step 5: Inbox triage
 
 **Do not auto-delete.** List stale candidates in batches:
 
@@ -113,7 +122,7 @@ For confirmed-completed items, follow three-step completion (remove from inbox.m
 
 ---
 
-## Step 5: Decisions revisit
+## Step 6: Decisions revisit
 
 For each open decision:
 - If `Review Date <= today`, surface it. Ask: "Current read?"
@@ -123,7 +132,7 @@ Do not modify decision docs without confirmation.
 
 ---
 
-## Step 6: Goals.md decay check
+## Step 7: Goals.md decay check
 
 If `goals.md` is > 30 days stale OR flagged for rewrite in `now.md` On My Mind:
 
@@ -132,7 +141,7 @@ If `goals.md` is > 30 days stale OR flagged for rewrite in `now.md` On My Mind:
 
 ---
 
-## Step 7: Draft week-WW.md
+## Step 8: Draft week-WW.md
 
 Write to `<VAULT_ROOT>/journal/YYYY/MM/week-WW.md` (ISO week number from Step 1). Use `<VAULT_ROOT>/templates/week-review.md` as the structure.
 
@@ -140,7 +149,7 @@ Show before writing.
 
 ---
 
-## Step 8: Force ONE decision via AskUserQuestion
+## Step 9: Force ONE decision via AskUserQuestion
 
 Pick the *single* most consequential drift signal. Examples:
 
@@ -151,7 +160,7 @@ Pick the *single* most consequential drift signal. Examples:
 
 ---
 
-## Step 9: Confirm writes + commit
+## Step 10: Confirm writes + commit
 
 Before writing `now.md` updates or `week-WW.md`, present a brief diff summary. Once confirmed, write.
 

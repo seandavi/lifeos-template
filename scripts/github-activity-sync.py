@@ -8,6 +8,15 @@ import glob
 from datetime import datetime, timezone
 import re
 
+def sanitize_text(text):
+    # Remove lifeOS tags
+    text = re.sub(r'\[\[.*?\]\]', '', text)
+    # Remove duration tags
+    text = re.sub(r'\(\d+h\)', '', text)
+    # Remove private tags
+    text = text.replace('%private', '')
+    return text.strip()
+
 def run_gh_api(endpoint, method="GET", body=None, paginate=False):
     cmd = ["gh", "api", endpoint, "-X", method]
     if paginate:
@@ -90,9 +99,18 @@ def check_duplicate_effort(filepath, project_name):
         return False
     with open(filepath, 'r', encoding='utf-8') as f:
         content = f.read()
+    
+    in_log = False
     for line in content.splitlines():
-        if f"[[{project_name}]]" in line and "(0h)" not in line:
-            return True
+        if line.startswith("## Log"):
+            in_log = True
+            continue
+        elif in_log and line.startswith("## "):
+            in_log = False
+            
+        if in_log and not re.match(r'^-\s*\[.\]', line):
+            if f"[[{project_name}]]" in line and "(0h)" not in line:
+                return True
     return False
 
 def append_to_journal(vault_root, date_str, line):
@@ -174,6 +192,21 @@ def main():
         import datetime as dt
         since_date = (dt.datetime.utcnow() - dt.timedelta(days=args.days)).isoformat() + "Z"
 
+    api_failed = False
+
+    # Normalize authors
+    normalized_authors = set(authors)
+    try:
+        user_info = run_gh_api("user")
+        if user_info:
+            if user_info.get("login"): normalized_authors.add(user_info["login"])
+            if user_info.get("name"): normalized_authors.add(user_info["name"])
+            if user_info.get("email"): normalized_authors.add(user_info["email"])
+        elif user_info is None:
+            api_failed = True
+    except Exception:
+        pass
+    authors = list(normalized_authors)
 
     repos_to_scan = {}
     unattributable = []
@@ -181,37 +214,56 @@ def main():
     # 1. Discover by topic
     for topic in topics:
         search_results = run_gh_api(f"search/repositories?q=topic:{topic}", paginate=True)
-        if search_results and "items" in search_results:
+        if search_results is None:
+            api_failed = True
+        elif "items" in search_results:
             for repo in search_results["items"]:
                 full_name = repo["full_name"]
                 if repo.get("fork") and not explicit_repos.get(full_name, {}).get("allow_fork"):
                     continue
-                repos_to_scan[full_name] = {"topic": topic, "config": explicit_repos.get(full_name, {})}
+                if full_name not in repos_to_scan:
+                    repos_to_scan[full_name] = {"topics": set(), "config": explicit_repos.get(full_name, {})}
+                repos_to_scan[full_name]["topics"].add(topic)
 
     # 2. Add explicit repos
     for full_name, repo_config in explicit_repos.items():
         if full_name not in repos_to_scan:
-            repos_to_scan[full_name] = {"topic": repo_config.get("topic"), "config": repo_config}
-        elif "topic" in repo_config:
-            repos_to_scan[full_name]["topic"] = repo_config["topic"]
+            repos_to_scan[full_name] = {"topics": set(), "config": repo_config}
+        if "topic" in repo_config:
+            repos_to_scan[full_name]["topics"].add(repo_config["topic"])
 
     for full_name, repo_data in repos_to_scan.items():
-        topic = repo_data["topic"]
-        project_name = projects_by_topic.get(topic)
+        repo_topics = repo_data["topics"]
         
-        if not project_name:
-            # Try to infer from explicit repo if topic is missing
-            if topic:
-                 unattributable.append(f"- Repo: {full_name} (Topic: {topic}) - No matching grant_id in projects/*.md")
+        project_names = set()
+        for t in repo_topics:
+            if t in projects_by_topic:
+                project_names.add(projects_by_topic[t])
+                
+        if not project_names:
+            if repo_topics:
+                 unattributable.append(f"- Repo: {full_name} (Topics: {', '.join(repo_topics)}) - No matching grant_id in projects/*.md")
             else:
                  unattributable.append(f"- Repo: {full_name} (Explicitly configured) - No topic assigned to map to project")
             continue
+            
+        if len(project_names) > 1 and "topic" not in repo_data["config"]:
+             unattributable.append(f"- Repo: {full_name} (Topics: {', '.join(repo_topics)}) - Matches multiple projects ({', '.join(project_names)}), but no explicit topic configured.")
+             continue
+             
+        # Resolve to a single project name.
+        if "topic" in repo_data["config"] and repo_data["config"]["topic"] in projects_by_topic:
+             project_name = projects_by_topic[repo_data["config"]["topic"]]
+        else:
+             project_name = list(project_names)[0]
 
         include_all = repo_data["config"].get("include_all_authors", False)
 
         # Fetch Commits
         commits = run_gh_api(f"repos/{full_name}/commits?since={since_date}", paginate=True)
-        if commits:
+        if commits is None:
+            api_failed = True
+        elif commits:
             for commit in commits:
                 if not include_all:
                     author_login = commit.get("author", {}).get("login") if commit.get("author") else None
@@ -221,7 +273,7 @@ def main():
                         continue
                 
                 sha = commit["sha"][:7]
-                msg = commit["commit"]["message"].split('\n')[0]
+                msg = sanitize_text(commit["commit"]["message"].split('\n')[0])
                 date_str = commit["commit"]["author"]["date"][:10]
                 
                 # Check duplication
@@ -233,18 +285,20 @@ def main():
 
         # Fetch PRs Created
         pulls = run_gh_api(f"repos/{full_name}/pulls?state=all&sort=created&direction=desc", paginate=True)
-        if pulls:
+        if pulls is None:
+            api_failed = True
+        elif pulls:
             for pr in pulls:
                 created_at = pr["created_at"]
                 if created_at < since_date:
-                    continue # PRs are sorted desc, so we can break/continue
+                    break # PRs are sorted desc, so we can break here
                     
                 if not include_all:
                     if pr.get("user", {}).get("login") not in authors:
                         continue
                         
                 number = pr["number"]
-                title = pr["title"]
+                title = sanitize_text(pr["title"])
                 date_str = created_at[:10]
                 
                 filepath = get_date_path(vault_root, date_str)
@@ -257,11 +311,15 @@ def main():
         # Fetch PR Reviews
         if authors or include_all:
             updated_prs = run_gh_api(f"search/issues?q=repo:{full_name}+is:pr+updated:>={since_date[:10]}", paginate=True)
-            if updated_prs and "items" in updated_prs:
+            if updated_prs is None:
+                api_failed = True
+            elif "items" in updated_prs:
                 for pr in updated_prs["items"]:
                     number = pr["number"]
                     reviews = run_gh_api(f"repos/{full_name}/pulls/{number}/reviews", paginate=True)
-                    if reviews:
+                    if reviews is None:
+                        api_failed = True
+                    elif reviews:
                         for review in reviews:
                             if review.get("submitted_at") and review["submitted_at"] >= since_date:
                                 reviewer_login = review.get("user", {}).get("login")
@@ -270,10 +328,11 @@ def main():
                                     
                                 review_date = review["submitted_at"][:10]
                                 filepath = get_date_path(vault_root, review_date)
-                                marker = f"Reviewed {full_name} PR #{number}"
+                                marker = f"<!-- REVIEW_ID:{review['id']} -->"
                                 if not file_contains(filepath, marker):
                                     confirm_str = " <!-- CONFIRM DUPLICATE? -->" if check_duplicate_effort(filepath, project_name) else ""
-                                    line = f"- [[{project_name}]] Reviewed {full_name} PR #{number}: {pr['title']} (0h){confirm_str}"
+                                    title = sanitize_text(pr['title'])
+                                    line = f"- [[{project_name}]] Reviewed {full_name} PR #{number}: {title} (0h){confirm_str}{marker}"
                                     append_to_journal(vault_root, review_date, line)
 
     unattributable_path = os.path.join(vault_root, 'unattributable.md')
@@ -284,8 +343,11 @@ def main():
             for item in unattributable:
                 f.write(f"{item}\n")
                 print(item, file=sys.stderr)
-    elif os.path.exists(unattributable_path):
+    elif not api_failed and os.path.exists(unattributable_path):
         os.remove(unattributable_path)
+
+    if api_failed:
+        sys.exit(1)
         
 if __name__ == "__main__":
     main()
