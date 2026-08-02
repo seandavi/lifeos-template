@@ -12,12 +12,13 @@ A large portion of the user's actual work occurs in code repositories, but none 
 
 We will implement a GitHub Activity Connector as a standalone ingestion script (`scripts/github-activity-sync.py`) with the following key design decisions:
 
-1. **Topic-Based Repository Mapping:** Repositories are mapped to lifeos projects primarily via GitHub topics (e.g., a repository with topic `u24ca289073` maps to the project with `grant_id: u24ca289073`). Explicit repository configuration is provided as a fallback.
-2. **Configurable Author Filtering:** By default, only commits and PRs authored by the user are ingested. This is configurable per-repository to allow tracking team-wide activity for projects where the user acts as a PI.
-3. **Zero-Duration Markers:** Commits and PRs are ingested as zero-effort markers (e.g., `0h`). The connector measures coverage of what happened, not effort duration, relying on the core system's de-duplication to avoid double-counting work already logged manually.
-4. **Unattributable Activity Handling:** Any discovered repository that cannot be confidently mapped to a specific project is flagged and appended to an `unattributable.md` file for manual review, rather than being silently dropped or incorrectly inferred.
-5. **Remote API Integration:** The connector uses the `gh` CLI to interact with the GitHub API, prioritizing consistency over local `.git` clone scanning.
-6. **Automation via Agent Skills:** The synchronization script is triggered automatically during the established weekly review cadence (via `.claude/skills/weekly-review/SKILL.md`) to respect API rate limits and avoid background daemon processes.
+1. **Topic-Based Repository Mapping:** Repositories are mapped to lifeos projects primarily via GitHub topics (e.g., a repository with topic `u24ca289073` maps to the project with `grant_id: u24ca289073`). Explicit repository configuration with a `project` override acts as a fallback and takes precedence over topics.
+2. **Configurable Author Filtering:** By default, only commits, PRs, and PR Reviews authored by the user are ingested. The script gracefully handles null user fields (from deleted accounts). This filtering is configurable per-repository to allow tracking team-wide activity for projects where the user acts as a PI.
+3. **Zero-Duration Markers & Duration Escaping:** Commits and PRs are ingested as zero-effort markers (e.g., `0h`). Furthermore, bare duration strings in commit messages (e.g., "increase TTL to 24h") are sanitized to prevent false progress logging on automated runs.
+4. **Deduplication Strategy:** The script uses detailed internal markers (including repository names and specific PR/Review IDs) to prevent duplication on successive runs. Potential cross-source duplicates (where the script overlaps with a manually entered log) are flagged with an HTML comment (`<!-- CONFIRM DUPLICATE? -->`) for manual reconciliation during the weekly review.
+5. **Comprehensive Remote API Integration:** The connector uses the `gh` CLI to interact with the GitHub API. It enumerates all repository branches to guarantee that work on non-default branches is ingested, and utilizes a configurable `timezone` key (`zoneinfo`) to guarantee deterministic date resolution for the user's local timezone.
+6. **Unattributable Activity Handling:** Any discovered repository that cannot be confidently mapped to a specific project is flagged and appended to an `unattributable.md` file for manual review, rather than being silently dropped or incorrectly inferred.
+7. **Automation via Agent Skills:** The synchronization script is triggered automatically during the established weekly review cadence (via `.claude/skills/weekly-review/SKILL.md`) to respect API rate limits and avoid background daemon processes.
 
 ## Alternatives Considered
 
