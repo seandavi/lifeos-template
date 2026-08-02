@@ -25,6 +25,8 @@ We will implement a GitHub Activity Connector as a standalone ingestion script (
 - **Local `.git` repository scanning:** Scanning local `.git` clones would save API calls and work offline, but it risks missing activity performed on other machines or the web UI, and relies on the user keeping local clones up-to-date. We opted for the GitHub API for consistency and completeness.
 - **Manual Logging:** Maintaining the status quo of manually logging commits. This was rejected because it is tedious and unsustainable.
 - **Background Daemon:** Running a background service to constantly poll GitHub. This was rejected in favor of triggering the sync during the existing weekly review ritual to keep the system simple and avoid background resource consumption.
+- **Separate Python Package:** Extracting the sync script into a separate, installable Python package with its own test suite. This was rejected to avoid over-engineering the solution for now and to leave the scope of LifeOS flexible, relying on PR descriptions and documentation for future maintainability.
+- **PyGitHub Dependency:** Using the `PyGitHub` library instead of `gh` CLI. This was rejected to adhere to a "zero-dependency philosophy," preferring the standard library and the already-required `gh` CLI over adding external python dependencies.
 
 ## Consequences
 
