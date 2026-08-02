@@ -16,10 +16,12 @@ A forensic health check on the vault at `<VAULT_ROOT>`. Detect decay before it b
 ## Step 0: Check for the `obsidian` CLI (optional accelerator)
 
 ```bash
-command -v obsidian && obsidian vault info=name
+command -v obsidian && timeout 5 obsidian vault info=name
 ```
 
-If both succeed, the link-graph checks below (wiki-link health, orphan notes) can
+Bound the probe with `timeout` (`gtimeout` on macOS) — `vault info` hangs when
+the app is closed. If no timeout command exists, skip the probe and use the
+fallbacks. If both checks succeed, the link-graph checks below (wiki-link health, orphan notes) can
 use Obsidian's *parsed* graph instead of regex — exact results, no false
 positives. See `.claude/skills/obsidian-cli/SKILL.md`. If the CLI is absent or
 the app is closed, use the grep/Glob versions as written; results are equivalent,

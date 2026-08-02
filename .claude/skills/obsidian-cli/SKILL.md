@@ -19,10 +19,14 @@ this skill simply never activates. Nothing needs to be configured or disabled.
 ## 0. Preconditions — check before relying on it
 
 ```bash
-command -v obsidian        # is the CLI installed?
-obsidian vault info=name   # is the app running + a vault open? (errors/hangs if not)
+command -v obsidian                  # is the CLI installed?
+timeout 5 obsidian vault info=name   # is the app running + a vault open?
 ```
 
+- **Always bound the app-running probe** — `vault info` can hang indefinitely
+  when the app is closed. Use `timeout 5` (or `gtimeout` from coreutils on
+  macOS); if neither exists, skip the probe and treat the first failed or
+  hanging query as the signal to fall back.
 - **If the CLI is absent or the app is closed → fall back to the filesystem**
   (Glob/Grep/Read), exactly as `CLAUDE.md`'s Wiki-Links fallback describes. Every
   query below has a filesystem equivalent; the CLI is faster and exact, not
