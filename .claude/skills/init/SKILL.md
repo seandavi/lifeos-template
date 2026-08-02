@@ -46,6 +46,8 @@ Use AskUserQuestion. One question at a time, don't form-dump.
 5. **Calendar source** — `icalBuddy` (macOS Calendar, captures Outlook+Google+iCloud) or "I'll wire my own."
    - Note that `icalBuddy` requires `brew install ical-buddy` on macOS.
 
+6. **Progress Tracking** — Ask: "Track effort by project? (yes/no)"
+
 Skip questions whose answers are obvious from context.
 
 ---
@@ -96,6 +98,7 @@ Report progress: "Updated N files."
 Read `<VAULT_ROOT>/CLAUDE.md`. Add or update:
 - A "User profile" section near the top with: name, role (ask once if not obvious), timezone
 - The user's preferred salutation / how they want to be addressed
+- The "Track effort by project" line under the `## Preferences` heading according to their answer to question 6.
 
 Show the diff before writing.
 
