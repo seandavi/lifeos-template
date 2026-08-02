@@ -19,6 +19,7 @@ organization: ""
 team: ""
 domains: []
 tags: []
+grant_id: ""        # Optional, for grouping progress reports
 
 # Resources / budget
 budget_source: ""

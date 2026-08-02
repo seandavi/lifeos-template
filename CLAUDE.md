@@ -4,6 +4,12 @@ This file is loaded into context whenever Claude Code operates in this vault. It
 
 ---
 
+## Preferences
+
+- **Track effort by project**: false (opt-in via `/init`)
+
+---
+
 ## Philosophy
 
 **Be a critical thinking partner, not a helpful completer.**
@@ -87,6 +93,10 @@ Actions that come out of conversations go in `<VAULT_ROOT>/inbox.md`, not embedd
 
 - **Morning**: Franklin's "What good shall I do this day?" + today's priorities
 - **Log**: Timestamped entries throughout the day (Carmack-style)
+  - *Tracking convention (if enabled):* `- 14:30 Worked on SOW draft [[u24ca289073]] 2.5h`
+  - *Milestones:* Log lines with projects but no duration count as 0-effort milestones.
+  - *Splits:* `[[r01]] [[chair-duties]] 3h split` (even split) or `3h (2/1)` (weighted).
+  - *Privacy:* Use `%private` marker to exclude individual log lines from exported reports.
 - **Evening**: Franklin's "What good have I done today?" + reflection
 
 Use `templates/daily-journal.md` as the starting structure.
@@ -137,6 +147,7 @@ The vault ships with skills in `.claude/skills/` and (after running `/init`) use
 | `/quarterly-review` | Quarterly | Heavy strategic review; force goals.md rewrite if conditions have changed |
 | `/orient` | First-run | Tour of the components and how they fit together |
 | `/init` | First-run | Personalization: vault root, name, timezone, email setup |
+| `/progress-report` | On-demand | Parse journal and completed.md for effort and milestones |
 
 ---
 
