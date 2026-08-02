@@ -276,13 +276,6 @@ def main():
             if t in projects_by_topic:
                 project_names.update(projects_by_topic[t])
                 
-        if not project_names:
-            if repo_topics:
-                 unattributable.append(f"- Repo: {full_name} (Topics: {', '.join(repo_topics)}) - No matching grant_id in projects/*.md")
-            else:
-                 unattributable.append(f"- Repo: {full_name} (Explicitly configured) - No topic assigned to map to project")
-            continue
-            
         explicit_project = repo_data["config"].get("project")
         explicit_topic = repo_data["config"].get("topic")
         explicit_projects = projects_by_topic.get(explicit_topic, []) if explicit_topic else []
@@ -293,42 +286,62 @@ def main():
              else:
                   unattributable.append(f"- Repo: {full_name} (Explicit config) - Project '{explicit_project}' does not exist.")
                   continue
-        elif len(project_names) > 1 and len(explicit_projects) != 1:
-             unattributable.append(f"- Repo: {full_name} (Topics: {', '.join(repo_topics)}) - Matches multiple projects ({', '.join(project_names)}). Configure an explicit 'project' override.")
-             continue
-        elif len(explicit_projects) == 1:
-             project_name = explicit_projects[0]
         else:
-             project_name = list(project_names)[0]
+            if not project_names:
+                if repo_topics:
+                     unattributable.append(f"- Repo: {full_name} (Topics: {', '.join(repo_topics)}) - No matching grant_id in projects/*.md")
+                else:
+                     unattributable.append(f"- Repo: {full_name} (Explicitly configured) - No topic assigned to map to project")
+                continue
+                
+            if len(project_names) > 1 and len(explicit_projects) != 1:
+                 unattributable.append(f"- Repo: {full_name} (Topics: {', '.join(repo_topics)}) - Matches multiple projects ({', '.join(project_names)}). Configure an explicit 'project' override.")
+                 continue
+            elif len(explicit_projects) == 1:
+                 project_name = explicit_projects[0]
+            else:
+                 project_name = list(project_names)[0]
 
         include_all = repo_data["config"].get("include_all_authors", False)
 
         # Fetch Commits
-        commits = run_gh_api(f"repos/{full_name}/commits?since={since_date}", paginate=True)
-        if commits is None:
+        seen_commits = set()
+        branches = run_gh_api(f"repos/{full_name}/branches", paginate=True)
+        if branches is None:
             api_failed = True
-        elif commits:
-            for commit in commits:
-                if not include_all:
-                    author_login = commit.get("author", {}).get("login") if commit.get("author") else None
-                    author_name = commit.get("commit", {}).get("author", {}).get("name")
-                    author_email = commit.get("commit", {}).get("author", {}).get("email")
-                    if not (author_login in authors or author_name in authors or author_email in authors):
+        elif branches:
+            for branch in branches:
+                branch_name = branch["name"]
+                commits = run_gh_api(f"repos/{full_name}/commits?sha={branch_name}&since={since_date}", paginate=True)
+                if commits is None:
+                    api_failed = True
+                    continue
+                for commit in commits:
+                    sha = commit["sha"]
+                    if sha in seen_commits:
                         continue
-                
-                sha = commit["sha"][:7]
-                msg = sanitize_text(commit["commit"]["message"].split('\n')[0])
-                
-                # Convert to local timezone
-                utc_str = commit["commit"]["author"]["date"].replace("Z", "+00:00")
-                date_str = datetime.fromisoformat(utc_str).astimezone(vault_tz).isoformat()[:10]
-                
-                # Check duplication
-                filepath = get_date_path(vault_root, date_str)
-                if not file_contains(filepath, sha):
-                    confirm_str = " <!-- CONFIRM DUPLICATE? -->" if check_duplicate_effort(filepath, project_name) else ""
-                    line = f"- [[{project_name}]] Commit {sha}: {msg} (0h){confirm_str}"
-                    append_to_journal(vault_root, date_str, line)
+                    seen_commits.add(sha)
+                    
+                    if not include_all:
+                        author_login = commit.get("author", {}).get("login") if commit.get("author") else None
+                        author_name = commit.get("commit", {}).get("author", {}).get("name")
+                        author_email = commit.get("commit", {}).get("author", {}).get("email")
+                        if not (author_login in authors or author_name in authors or author_email in authors):
+                            continue
+                    
+                    short_sha = sha[:7]
+                    msg = sanitize_text(commit["commit"]["message"].split('\n')[0])
+                    
+                    # Convert to local timezone
+                    utc_str = commit["commit"]["author"]["date"].replace("Z", "+00:00")
+                    date_str = datetime.fromisoformat(utc_str).astimezone(vault_tz).isoformat()[:10]
+                    
+                    # Check duplication
+                    filepath = get_date_path(vault_root, date_str)
+                    if not file_contains(filepath, short_sha):
+                        confirm_str = " <!-- CONFIRM DUPLICATE? -->" if check_duplicate_effort(filepath, project_name) else ""
+                        line = f"- [[{project_name}]] Commit {short_sha}: {msg} (0h){confirm_str}"
+                        append_to_journal(vault_root, date_str, line)
 
         # Fetch PRs Created
         pulls_search = run_gh_api(f"search/issues?q=repo:{full_name}+is:pr+created:>={since_date[:10]}", paginate=True)
@@ -341,7 +354,8 @@ def main():
                     continue
                     
                 if not include_all:
-                    if pr.get("user", {}).get("login") not in authors:
+                    pr_user = pr.get("user") or {}
+                    if pr_user.get("login") not in authors:
                         continue
                         
                 number = pr["number"]
@@ -370,9 +384,10 @@ def main():
                     elif reviews:
                         for review in reviews:
                             if review.get("submitted_at") and review["submitted_at"] >= since_date:
-                                reviewer_login = review.get("user", {}).get("login")
-                                reviewer_name = review.get("user", {}).get("name")
-                                reviewer_email = review.get("user", {}).get("email")
+                                review_user = review.get("user") or {}
+                                reviewer_login = review_user.get("login")
+                                reviewer_name = review_user.get("name")
+                                reviewer_email = review_user.get("email")
                                 if not include_all and not (reviewer_login in authors or reviewer_name in authors or reviewer_email in authors):
                                     continue
                                     
