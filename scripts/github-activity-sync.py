@@ -11,8 +11,8 @@ import re
 def sanitize_text(text):
     # Remove lifeOS tags
     text = re.sub(r'\[\[.*?\]\]', '', text)
-    # Remove duration tags
-    text = re.sub(r'\(\d+h\)', '', text)
+    # Remove duration tags (e.g. (1h), (30m), (1h30m))
+    text = re.sub(r'\(\d+[hm](?:\d+[hm])?\)', '', text)
     # Remove private tags
     text = text.replace('%private', '')
     return text.strip()
@@ -186,7 +186,7 @@ def main():
     since_str = datetime.now(timezone.utc).replace(hour=0, minute=0, second=0).isoformat()
     if sys.version_info >= (3, 11):
          import datetime as dt
-         since_date = (dt.datetime.now(dt.timezone.utc) - dt.timedelta(days=args.days)).isoformat()
+         since_date = (dt.datetime.now(dt.timezone.utc) - dt.timedelta(days=args.days)).isoformat().replace("+00:00", "Z")
     else:
         # Fallback
         import datetime as dt
@@ -227,6 +227,13 @@ def main():
 
     # 2. Add explicit repos
     for full_name, repo_config in explicit_repos.items():
+        if not repo_config.get("allow_fork"):
+            repo_info = run_gh_api(f"repos/{full_name}")
+            if repo_info is None:
+                api_failed = True
+            elif repo_info.get("fork"):
+                continue
+                
         if full_name not in repos_to_scan:
             repos_to_scan[full_name] = {"topics": set(), "config": repo_config}
         if "topic" in repo_config:
@@ -284,14 +291,14 @@ def main():
                     append_to_journal(vault_root, date_str, line)
 
         # Fetch PRs Created
-        pulls = run_gh_api(f"repos/{full_name}/pulls?state=all&sort=created&direction=desc", paginate=True)
-        if pulls is None:
+        pulls_search = run_gh_api(f"search/issues?q=repo:{full_name}+is:pr+created:>={since_date[:10]}", paginate=True)
+        if pulls_search is None:
             api_failed = True
-        elif pulls:
-            for pr in pulls:
+        elif "items" in pulls_search:
+            for pr in pulls_search["items"]:
                 created_at = pr["created_at"]
                 if created_at < since_date:
-                    break # PRs are sorted desc, so we can break here
+                    continue
                     
                 if not include_all:
                     if pr.get("user", {}).get("login") not in authors:

@@ -116,7 +116,9 @@ Show the diff before writing.
 - Resolved waiting (cross-reference completed.md and journal logs)
 - No movement (items in inbox.md but never in any recent journal)
 
-Present 5-10 candidates at a time via AskUserQuestion multiSelect: "Which of these are done/stale and can be removed?" Then edit.
+    Present 5-10 candidates at a time via AskUserQuestion multiSelect: "Which of these are done/stale and can be removed?" Then edit.
+
+- Duplicate Reconciliation: Search the week's journal entries for `<!-- CONFIRM DUPLICATE? -->`. Present the candidates to the user and manually merge or delete them based on the response.
 
 For confirmed-completed items, follow three-step completion (remove from inbox.md → append to completed.md with strategic context → check off in journal).
 
@@ -143,7 +145,7 @@ If `goals.md` is > 30 days stale OR flagged for rewrite in `now.md` On My Mind:
 
 ## Step 8: Draft week-WW.md
 
-Write to `<VAULT_ROOT>/journal/YYYY/MM/week-WW.md` (ISO week number from Step 1). Use `<VAULT_ROOT>/templates/week-review.md` as the structure.
+Write to `<VAULT_ROOT>/journal/YYYY/MM/week-WW.md` (ISO week number from Step 2). Use `<VAULT_ROOT>/templates/week-review.md` as the structure.
 
 Show before writing.
 

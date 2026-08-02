@@ -103,7 +103,7 @@ def process_file_lines(lines, date_str, projects_db, people_set, effort_by_proj,
         if not in_log_section:
             continue
 
-        if '%private' in line:
+        if '%private' in line or '<!-- CONFIRM DUPLICATE? -->' in line:
             continue
 
         if not line.startswith('-'):
