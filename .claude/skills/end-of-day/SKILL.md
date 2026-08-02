@@ -31,7 +31,7 @@ If today's journal doesn't exist: "No journal for today — did you skip morning
 ## Step 2: Check durations & summarize
 
 First, check if `Track effort by project` is `true` in `CLAUDE.md`. If it is:
-- Scan today's journal for any log entries that contain a project link (`[[project-name]]`) but lack a duration suffix (e.g., `1h`, `45m`).
+- Scan **only the `## Log` section** of today's journal for timestamped entries that contain a project link (`[[project-name]]`) but lack a duration suffix (e.g., `1h`, `45m`). Ignore checkbox to-dos (`- [ ]` / `- [x]`) and the Morning/Evening sections — those are plans, not logged work.
 - Prompt the user to provide the missing durations (e.g., "You logged a meeting with [[jane]] but no duration. How long was it?"). If an item is a 0-effort milestone (e.g., published a paper), they can just say "milestone". Update the journal entry with their answers.
 
 Then, identify:

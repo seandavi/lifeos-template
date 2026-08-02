@@ -2,7 +2,7 @@
 name: progress-report
 description: "Generates a structured progress report across projects, people, and time. Parses the journal and completed.md for effort and milestones, grouping by grant, project, and person. Use when the user asks for a 'progress report', 'effort accounting', or asks 'what did I accomplish on project X'."
 user-invocable: true
-allowed-tools: Read, Bash
+allowed-tools: Read, Bash, AskUserQuestion
 ---
 
 # Progress Report

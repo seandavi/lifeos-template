@@ -95,7 +95,7 @@ Actions that come out of conversations go in `<VAULT_ROOT>/inbox.md`, not embedd
 - **Log**: Timestamped entries throughout the day (Carmack-style)
   - *Tracking convention (if enabled):* `- 14:30 Worked on SOW draft [[u24ca289073]] 2.5h`
   - *Milestones:* Log lines with projects but no duration count as 0-effort milestones.
-  - *Splits:* `[[r01]] [[chair-duties]] 3h split` (even split) or `3h (2/1)` (weighted).
+  - *Splits:* hours are split evenly across all project links by default — `[[r01]] [[chair-duties]] 3h` gives each 1.5h. Weight with `3h (2/1)` (parts sum to the block).
   - *Privacy:* Use `%private` marker to exclude individual log lines from exported reports.
 - **Evening**: Franklin's "What good have I done today?" + reflection
 

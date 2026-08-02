@@ -72,7 +72,7 @@ Report progress: "Updated N files."
 Read `<VAULT_ROOT>/CLAUDE.md`. Add or update:
 - A "User profile" section near the top with: name, role (ask once if not obvious), timezone
 - The user's preferred salutation / how they want to be addressed
-- The "Track effort by project" line under `# Preferences` according to their answer to question 6.
+- The "Track effort by project" line under the `## Preferences` heading according to their answer to question 6.
 
 Show the diff before writing.
 

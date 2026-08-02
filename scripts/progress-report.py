@@ -29,8 +29,8 @@ def get_projects(vault_root):
             with open(path, 'r', encoding='utf-8') as f:
                 fm = parse_frontmatter(f.read())
                 projects[name] = fm
-        except Exception:
-            pass
+        except Exception as e:
+            print(f"Warning: skipping project file {path}: {e}", file=sys.stderr)
     return projects
 
 def parse_duration(line):
@@ -81,26 +81,47 @@ def get_people(vault_root):
         people.add(name)
     return people
 
-def process_file_lines(lines, date_str, projects_db, people_set, effort_by_proj, effort_by_person, effort_by_grant, milestones, start_date, end_date):
+def process_file_lines(lines, date_str, projects_db, people_set, effort_by_proj, effort_by_person, effort_by_grant, milestones, start_date, end_date, is_journal=False):
     current_date = date_str
-    
+    # In journal files, only the "## Log" section holds effort entries; Morning/Evening
+    # checkboxes may carry project links but are plans, not work performed.
+    in_log_section = not is_journal
+
     for line in lines:
         line = line.strip()
-        # Track dates in completed.md
-        date_match = re.match(r'^##\s+(\d{4}-\d{2}-\d{2})', line)
-        if date_match:
-            current_date = date_match.group(1)
+        heading_match = re.match(r'^##\s+(.*)', line)
+        if heading_match:
+            if is_journal:
+                in_log_section = heading_match.group(1).strip().lower().startswith('log')
+            else:
+                # Track dates in completed.md
+                date_match = re.match(r'^(\d{4}-\d{2}-\d{2})', heading_match.group(1))
+                if date_match:
+                    current_date = date_match.group(1)
             continue
-            
-        if current_date and not (start_date <= current_date <= end_date):
+
+        if not in_log_section:
             continue
 
         if '%private' in line:
             continue
-            
+
         if not line.startswith('-'):
             continue
-            
+
+        # Skip checkbox to-dos ("- [ ]" / "- [x]") — tasks, not logged work
+        if re.match(r'^-\s*\[.\]', line):
+            continue
+
+        # completed.md entries carry their date inline: "- 2026-04-27 — ..."
+        line_date = current_date
+        inline_date = re.match(r'^-\s*(\d{4}-\d{2}-\d{2})', line)
+        if inline_date:
+            line_date = inline_date.group(1)
+
+        if line_date and not (start_date <= line_date <= end_date):
+            continue
+
         # Find all [[links]]
         links = re.findall(r'\[\[(.*?)\]\]', line)
         if not links:
@@ -112,15 +133,18 @@ def process_file_lines(lines, date_str, projects_db, people_set, effort_by_proj,
         duration = parse_duration(line)
         
         if duration == 0 and projs:
-            # Milestone
+            # Milestone — strip the list marker so report output isn't "- date: - text",
+            # and the inline date (completed.md) since the report prints its own
+            text = re.sub(r'^-\s*', '', line)
+            text = re.sub(r'^\d{4}-\d{2}-\d{2}\s*[—:-]*\s*', '', text)
             for proj in projs:
                 grant = projects_db[proj].get('grant_id', 'No Grant')
                 if not grant: grant = 'No Grant'
                 milestones.append({
-                    'date': current_date,
+                    'date': line_date,
                     'project': proj,
                     'grant': grant,
-                    'text': line,
+                    'text': text,
                     'people': people
                 })
         elif duration > 0 and projs:
@@ -134,12 +158,11 @@ def process_file_lines(lines, date_str, projects_db, people_set, effort_by_proj,
                 effort_by_grant[grant] += allocated_time
                 
                 if people:
-                    # Divvy effort among people equally for simplicity if multiple are tagged
-                    # or attribute full time to them for their personal report? 
-                    # We will attribute the allocated_time proportionally if multiple people, or just to all.
-                    # The prompt says "activity for [person] on [project]". Let's attribute to all tagged people.
+                    # "Effort by person" means time involving that person: a 1h meeting
+                    # with two people is 1h for each. Splitting only applies to
+                    # projects/grants, where hours must sum to the block.
                     for person in people:
-                        effort_by_person[person][proj] += allocated_time / len(people)
+                        effort_by_person[person][proj] += allocated_time
 
 def main():
     parser = argparse.ArgumentParser(description="Generate structured progress report")
@@ -162,7 +185,7 @@ def main():
     for date_str, path in journal_files:
         try:
             with open(path, 'r', encoding='utf-8') as f:
-                process_file_lines(f.readlines(), date_str, projects_db, people_set, effort_by_proj, effort_by_person, effort_by_grant, milestones, args.start, args.end)
+                process_file_lines(f.readlines(), date_str, projects_db, people_set, effort_by_proj, effort_by_person, effort_by_grant, milestones, args.start, args.end, is_journal=True)
         except Exception as e:
             print(f"Error reading {path}: {e}", file=sys.stderr)
             
