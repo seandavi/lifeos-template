@@ -52,7 +52,33 @@ Skip questions whose answers are obvious from context.
 
 ---
 
-## Step 2: Substitute `<VAULT_ROOT>` throughout
+## Step 2: Detect optional integrations
+
+Some LifeOS features are **capability-gated**: they activate only when a
+supporting tool is present, and disappear entirely when it isn't. No
+configuration is stored, no settings go dead — detection happens again at the
+moment of use. This is the pattern future integrations (e.g. a GitHub activity
+connector) should follow.
+
+Check what's available and report one line per integration — no questions:
+
+```bash
+command -v obsidian >/dev/null && echo "obsidian CLI: available" || echo "obsidian CLI: not found"
+```
+
+- **`obsidian` CLI** — turns the vault from a folder of files into a queryable
+  knowledge graph (resolved wiki-links, vault-wide tasks, frontmatter
+  properties). When present, the `/obsidian-cli` skill and the CLI-first paths
+  in `/audit` and Wiki-Links resolution activate automatically. When absent,
+  everything falls back to Glob/Grep — no feature is lost, only speed and
+  precision.
+
+Don't ask the user to install anything here — report what was detected and move
+on. The vault works fully without any of these.
+
+---
+
+## Step 3: Substitute `<VAULT_ROOT>` throughout
 
 Find all files containing the placeholder:
 ```bash
@@ -67,7 +93,7 @@ Report progress: "Updated N files."
 
 ---
 
-## Step 3: Personalize CLAUDE.md
+## Step 4: Personalize CLAUDE.md
 
 Read `<VAULT_ROOT>/CLAUDE.md`. Add or update:
 - A "User profile" section near the top with: name, role (ask once if not obvious), timezone
@@ -78,7 +104,7 @@ Show the diff before writing.
 
 ---
 
-## Step 4: Set EMAIL_LLM in email-scan.sh
+## Step 5: Set EMAIL_LLM in email-scan.sh
 
 If the user picked a non-default email scanner, edit `<VAULT_ROOT>/scripts/email-scan.sh`:
 - Update the `LLM_CMD="${EMAIL_LLM:-gemini --yolo}"` default to match their choice
@@ -86,7 +112,7 @@ If the user picked a non-default email scanner, edit `<VAULT_ROOT>/scripts/email
 
 ---
 
-## Step 5: Seed plan.md and values.md (optional)
+## Step 6: Seed plan.md and values.md (optional)
 
 > "Want to populate plan.md and values.md now (10 min), or skip and come back later?"
 > - Populate now
@@ -104,7 +130,7 @@ Do NOT write `goals.md` here — annual goals deserve their own session via `/qu
 
 ---
 
-## Step 6: Create today's journal
+## Step 7: Create today's journal
 
 If `<VAULT_ROOT>/journal/$(date +%Y)/$(date +%m)/$(date +%Y-%m-%d).md` doesn't exist:
 - Create the directory
@@ -113,7 +139,7 @@ If `<VAULT_ROOT>/journal/$(date +%Y)/$(date +%m)/$(date +%Y-%m-%d).md` doesn't e
 
 ---
 
-## Step 7: Initialize git (if not already)
+## Step 8: Initialize git (if not already)
 
 ```bash
 cd <VAULT_ROOT>
@@ -128,7 +154,7 @@ If already a git repo: skip.
 
 ---
 
-## Step 8: Hand off
+## Step 9: Hand off
 
 ```
 Setup complete. Suggested next step:
@@ -155,6 +181,7 @@ If running on a Friday: also suggest `/weekly-review` after a week of using `/mo
 
 - All `<VAULT_ROOT>` placeholders replaced with actual path
 - CLAUDE.md personalized
+- Optional integrations detected and reported
 - email-scan.sh and other scripts configured to the user's tooling
 - Optionally: plan.md / values.md seeded
 - Today's journal exists

@@ -15,7 +15,7 @@ We will use the **daily journal as the single source of truth** for progress tra
 1. **Log Line Conventions**: 
    - Users optionally add a project wiki-link and a duration to a log line: `- 14:30 Worked on SOW draft [[u24ca289073]] 2.5h`.
    - **Milestones**: A line with a project link but no duration counts as a 0-effort milestone (e.g. publishing a paper).
-   - **Splits**: Effort can be split across multiple projects evenly (`3h split`) or weighted (`3h (2/1)`).
+   - **Splits**: Effort on a line with multiple project links is split evenly by default, or weighted with `3h (2/1)`.
    - **Privacy**: Lines containing `%private` are excluded from exported reports.
 2. **Project Frontmatter**: Added `grant_id` to the frontmatter of `templates/project.md` so that effort can be grouped at the grant level rather than just the project level.
 3. **Query-Time Parsing**: A new `scripts/progress-report.py` parses `journal/` and `completed.md` for project links, durations, and splits. The `/progress-report` skill invokes this script to generate a copy-pasteable Markdown report.

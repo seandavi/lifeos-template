@@ -105,7 +105,9 @@ Use `templates/daily-journal.md` as the starting structure.
 
 ## Wiki-Links
 
-Files use `[[wiki-links]]` to cross-reference each other. When you encounter `[[some-name]]`, resolve it by searching for `some-name.md` across these directories (in order): `wiki/*/entities/`, `wiki/*/concepts/`, `wiki/*/sources/`, `people/`, `research/`, `decisions/`, `journal/`, `notes/`, `reference/`. Use Glob to find the file, then read it for context.
+Files use `[[wiki-links]]` to cross-reference each other. To resolve `[[some-name]]`: **if the `obsidian` CLI is installed** (`command -v obsidian`) prefer `obsidian read file="some-name"` and its graph queries (`backlinks`, `links`, `unresolved`, `orphans`) — it exposes Obsidian's parsed link graph, which beats text search. **If absent**, search for `some-name.md` across these directories (in order): `wiki/*/entities/`, `wiki/*/concepts/`, `wiki/*/sources/`, `people/`, `research/`, `decisions/`, `journal/`, `notes/`, `reference/`. Use Glob to find the file, then read it for context.
+
+For substantial graph / task / frontmatter work via the CLI (audits, task reconciliation, property queries, the query-vs-edit boundary, live-app-verb cautions), use the **`obsidian-cli` skill** (`.claude/skills/obsidian-cli/SKILL.md`). The CLI is entirely optional — every workflow in this vault works without it.
 
 When creating or editing files, add wiki-links to connect related content:
 - Journal entries link to people mentioned: `Met with [[jane-smith]]`
@@ -148,6 +150,7 @@ The vault ships with skills in `.claude/skills/` and (after running `/init`) use
 | `/orient` | First-run | Tour of the components and how they fit together |
 | `/init` | First-run | Personalization: vault root, name, timezone, email setup |
 | `/progress-report` | On-demand | Parse journal and completed.md for effort and milestones |
+| `/obsidian-cli` | Optional — only when the `obsidian` CLI is installed | Query the vault's parsed link graph, tasks, and frontmatter via the running Obsidian app; falls back to Glob/Grep when absent |
 
 ---
 
