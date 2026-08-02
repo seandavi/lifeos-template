@@ -79,7 +79,9 @@ def append_to_journal(vault_root, date_str, line):
     with open(filepath, 'a', encoding='utf-8') as f:
         if os.path.getsize(filepath) > 0:
             # Ensure it ends with a newline before appending
-            f.write("\n" if not file_contains(filepath, "\n") else "")
+            with open(filepath, 'r', encoding='utf-8') as rf:
+                if not rf.read().endswith("\n"):
+                    f.write("\n")
         f.write(f"{line}\n")
 
 def main():
@@ -198,9 +200,9 @@ def main():
                 date_str = created_at[:10]
                 
                 filepath = get_date_path(vault_root, date_str)
-                marker = f"PR #{number}"
+                marker = f"{full_name} PR #{number}"
                 if not file_contains(filepath, marker):
-                    line = f"- [[{project_name}]] Created PR #{number}: {title} (0h)"
+                    line = f"- [[{project_name}]] Created PR #{number} in {full_name}: {title} (0h)"
                     append_to_journal(vault_root, date_str, line)
                     
         # Fetch PR Reviews (this requires iterating PRs which is expensive, but for recent it's okay)
@@ -215,9 +217,9 @@ def main():
                         # Just append to today since review date is hard to pin down without GraphQL or many REST calls
                         today_str = datetime.now(timezone.utc).isoformat()[:10]
                         filepath = get_date_path(vault_root, today_str)
-                        marker = f"Reviewed PR #{number}"
+                        marker = f"Reviewed {full_name} PR #{number}"
                         if not file_contains(filepath, marker):
-                            line = f"- [[{project_name}]] Reviewed PR #{number}: {title} (0h)"
+                            line = f"- [[{project_name}]] Reviewed PR #{number} in {full_name}: {title} (0h)"
                             append_to_journal(vault_root, today_str, line)
 
     if unattributable:
