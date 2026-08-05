@@ -35,13 +35,13 @@ def check_search_rate_limit(minimum_remaining=1):
             if sleep_seconds > 0:
                 print(f"Approaching GitHub search API rate limit. Sleeping {sleep_seconds:.1f}s until reset...", file=sys.stderr)
                 time.sleep(sleep_seconds)
-    except Exception:
-        pass
+    except (subprocess.CalledProcessError, json.JSONDecodeError, KeyError, TypeError) as e:
+        print(f"Warning: Failed to check GitHub rate limit ({e}). Continuing without throttling.", file=sys.stderr)
 
 
 def run_gh_api(endpoint, method="GET", body=None, paginate=False):
     if endpoint.startswith("search/"):
-        if paginate and "?" not in endpoint:
+        if paginate and "per_page=" not in endpoint:
             separator = "&" if "?" in endpoint else "?"
             endpoint = f"{endpoint}{separator}per_page=100"
         check_search_rate_limit(2 if paginate else 1)
