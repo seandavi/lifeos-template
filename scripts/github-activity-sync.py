@@ -5,6 +5,7 @@ import json
 import shutil
 import subprocess
 import glob
+import time
 from datetime import datetime, timezone
 try:
     from zoneinfo import ZoneInfo
@@ -23,7 +24,23 @@ def sanitize_text(text):
     text = text.replace('%private', '')
     return text.strip()
 
+def check_search_rate_limit():
+    cmd = ["gh", "api", "rate_limit"]
+    try:
+        result = subprocess.run(cmd, capture_output=True, text=True, check=True)
+        limit_info = json.loads(result.stdout)["resources"]["search"]
+        if limit_info["remaining"] < 5:
+            reset_time = limit_info["reset"]
+            sleep_seconds = reset_time - time.time() + 10
+            if sleep_seconds > 0:
+                print(f"Approaching GitHub search API rate limit. Sleeping {sleep_seconds:.1f}s until reset...", file=sys.stderr)
+                time.sleep(sleep_seconds)
+    except Exception:
+        pass
+
 def run_gh_api(endpoint, method="GET", body=None, paginate=False):
+    if endpoint.startswith("search/"):
+        check_search_rate_limit()
     cmd = ["gh", "api", endpoint, "-X", method]
     if paginate:
         cmd.append("--paginate")
@@ -173,6 +190,7 @@ def main():
     parser = argparse.ArgumentParser(description="Sync GitHub activity to journal")
     parser.add_argument('--vault', default=".", help="Vault root directory")
     parser.add_argument('--days', type=int, default=7, help="Number of days to look back")
+    parser.add_argument('--grant', type=str, help="Only sync repositories for this specific grant/topic")
     args = parser.parse_args()
 
     vault_root = args.vault
@@ -197,6 +215,10 @@ def main():
     authors = config.get("authors", [])
     topics = config.get("topics", [])
     explicit_repos = config.get("repos", {})
+
+    if args.grant:
+        topics = [args.grant]
+        explicit_repos = {}
 
     vault_tz_str = config.get("timezone", "UTC")
     vault_tz = timezone.utc
