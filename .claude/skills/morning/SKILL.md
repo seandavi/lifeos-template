@@ -63,6 +63,24 @@ Read `<VAULT_ROOT>/inbox.md` top-to-bottom. Identify candidates for removal:
 
 Confirm removals via AskUserQuestion (multiSelect). Don't auto-delete.
 
+**Aging check.** Step 10 only looks at yesterday's journal, so an open item that never lands on a daily list becomes invisible to it — it can sit for weeks without surfacing. After the removal pass, scan `inbox.md`'s `Action needed` section and flag items that meet either criterion:
+
+- No journal mention (via `[[wiki-links]]` or text match) in the last **5 days** (check the last 5 daily journal files).
+- The journal — at any point — described the item as displaced ("keeps getting pushed," "displaced again," "keeps getting displaced," or similar phrasing). A self-flagged item is a stronger signal than any age cutoff; flag it regardless of age.
+
+Before building the candidate list, **skip any `Action needed` line that contains `(revisit YYYY-MM-DD)` where the date is today or in the future** — that item has been deliberately deferred and should not resurface until its revisit date arrives.
+
+Cap the list at the **5 oldest / strongest-signal items** on the first run to avoid cold-start noise. Once the inbox is well-groomed, the cap rarely matters.
+
+Surface flagged items via AskUserQuestion. For each, require one of four dispositions — every path must change state so the same item doesn't resurface untouched tomorrow:
+
+- **Today** → add to today's journal under the priorities or to-do section.
+- **Defer to a date** → append `(revisit YYYY-MM-DD)` to the inbox line; suppress from this check until that date.
+- **Keep warm** → move the line to `inbox.md`'s `Keep warm` section; it leaves the aging pass.
+- **Drop** → remove from `inbox.md`.
+
+"No change / skip" is not an option. An item that surfaces and stays untouched will surface again tomorrow, which is how the check becomes noise.
+
 Then check `email-scan.md` for new items that should be added. For each new item, follow `inbox.md`'s section structure (`Action needed` / `Waiting on others` / `Keep warm`).
 
 ---
