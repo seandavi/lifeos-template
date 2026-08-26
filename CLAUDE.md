@@ -40,39 +40,39 @@ When working through the day, act as a thinking partner:
 **What to log:** Decisions, conclusions, work accomplished, key insights.
 **What to skip:** Exploratory back-and-forth (unless requested), trivial exchanges.
 
-Actions that come out of conversations go in `<VAULT_ROOT>/inbox.md`, not embedded in journal entries.
+Actions that come out of conversations go in `inbox.md`, not embedded in journal entries.
 
-**Ideas and insights** go in `<VAULT_ROOT>/notes/` as atomic note files. When an interesting idea, connection, or hypothesis surfaces in conversation, create a note without asking. One idea per file, minimal frontmatter (date, tags, source), heavy on wiki-links. Tell me: "Noted: [filename]". Keep the conversation flowing.
+**Ideas and insights** go in `notes/` as atomic note files. When an interesting idea, connection, or hypothesis surfaces in conversation, create a note without asking. One idea per file, minimal frontmatter (date, tags, source), heavy on wiki-links. Tell me: "Noted: [filename]". Keep the conversation flowing.
 
 ---
 
 ## File Layout
 
 ```
-<VAULT_ROOT>/plan.md                       # 10-year vision (Carmack .plan style)
-<VAULT_ROOT>/values.md                     # Core principles
-<VAULT_ROOT>/now.md                        # Current-state snapshot
-<VAULT_ROOT>/inbox.md                      # Open action items (source of truth)
-<VAULT_ROOT>/completed.md                  # Running archive with strategic context
-<VAULT_ROOT>/CLAUDE.md                     # This file
-<VAULT_ROOT>/journal/YYYY/goals.md         # Annual goals
-<VAULT_ROOT>/journal/YYYY/MM/YYYY-MM-DD.md # Daily entries
-<VAULT_ROOT>/journal/YYYY/MM/week-WW.md    # Weekly reviews
-<VAULT_ROOT>/journal/YYYY/Q{N}-review.md   # Quarterly reviews
-<VAULT_ROOT>/decisions/                    # Prospective decision records
-<VAULT_ROOT>/people/                       # Relationship notes (use templates/person.md)
-<VAULT_ROOT>/projects.md                   # Project index
-<VAULT_ROOT>/projects/                     # Per-project detail files
-<VAULT_ROOT>/notes/                        # Atomic slipbox notes
-<VAULT_ROOT>/talk-notes/                   # Seminar / talk notes
-<VAULT_ROOT>/research/                     # Longer research docs
-<VAULT_ROOT>/personal/diary.md             # Private reflections — separate from work journal
-<VAULT_ROOT>/calendar/                     # Calendar exports + meeting prep output
-<VAULT_ROOT>/templates/                    # File templates
-<VAULT_ROOT>/wiki/                         # Structured domain wikis
-<VAULT_ROOT>/raw/                          # Source material for wiki ingest
-<VAULT_ROOT>/scripts/                      # Helper scripts
-<VAULT_ROOT>/.claude/skills/               # Project-level skills
+plan.md                       # 10-year vision (Carmack .plan style)
+values.md                     # Core principles
+now.md                        # Current-state snapshot
+inbox.md                      # Open action items (source of truth)
+completed.md                  # Running archive with strategic context
+CLAUDE.md                     # This file
+journal/YYYY/goals.md         # Annual goals
+journal/YYYY/MM/YYYY-MM-DD.md # Daily entries
+journal/YYYY/MM/week-WW.md    # Weekly reviews
+journal/YYYY/Q{N}-review.md   # Quarterly reviews
+decisions/                    # Prospective decision records
+people/                       # Relationship notes (use templates/person.md)
+projects.md                   # Project index
+projects/                     # Per-project detail files
+notes/                        # Atomic slipbox notes
+talk-notes/                   # Seminar / talk notes
+research/                     # Longer research docs
+personal/diary.md             # Private reflections — separate from work journal
+calendar/                     # Calendar exports + meeting prep output
+templates/                    # File templates
+wiki/                         # Structured domain wikis
+raw/                          # Source material for wiki ingest
+scripts/                      # Helper scripts
+.claude/skills/               # Project-level skills
 ```
 
 ### File Division of Labor

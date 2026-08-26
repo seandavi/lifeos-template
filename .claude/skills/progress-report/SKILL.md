@@ -27,7 +27,7 @@ Execute the parsing script with the appropriate arguments.
 You may need to translate the user's date range into specific dates or pass it directly.
 
 ~~~bash
-cd <VAULT_ROOT> && uv run scripts/progress-report.py --start "YYYY-MM-DD" --end "YYYY-MM-DD"
+uv run scripts/progress-report.py --start "YYYY-MM-DD" --end "YYYY-MM-DD"
 ~~~
 
 *Note: If `uv` is not available, fall back to `python3 scripts/progress-report.py`.*

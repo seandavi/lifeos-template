@@ -21,7 +21,7 @@ import subprocess
 from pathlib import Path
 
 # Configuration ---------------------------------------------------------------
-VAULT_ROOT = Path(os.environ.get("LIFEOS_HOME", Path.home() / "Documents" / "lifeos"))
+VAULT_ROOT = Path(os.environ.get("LIFEOS_HOME", Path(__file__).resolve().parent.parent))
 MEETINGS_DIR = VAULT_ROOT / "meetings"
 ICAL_BUDDY_CMD = [
     "icalBuddy",

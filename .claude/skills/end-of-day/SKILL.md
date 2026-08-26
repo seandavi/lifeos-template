@@ -20,9 +20,9 @@ date "+%Y-%m-%d"
 ```
 
 Read:
-- `<VAULT_ROOT>/journal/YYYY/MM/YYYY-MM-DD.md` (today)
-- `<VAULT_ROOT>/inbox.md`
-- `<VAULT_ROOT>/completed.md` (top 20 lines for format reference)
+- `journal/YYYY/MM/YYYY-MM-DD.md` (today)
+- `inbox.md`
+- `completed.md` (top 20 lines for format reference)
 
 If today's journal doesn't exist: "No journal for today — did you skip morning? Want me to backfill from completed work and inbox movement?"
 
@@ -68,7 +68,7 @@ Two AskUserQuestion prompts:
 > - Yes — describe it briefly, I'll write it to notes/
 > - No
 
-If yes: write atomic note to `<VAULT_ROOT>/notes/{slug}.md` using `templates/note.md`.
+If yes: write atomic note to `notes/{slug}.md` using `templates/note.md`.
 
 > "Anything to capture as a decision?"
 > - Yes — I'll trigger /decide
@@ -86,7 +86,7 @@ Don't force these — most days, neither happens. If today *was* substantive, pu
 > - Yes
 > - No (default)
 
-Don't push if no. If yes, prepend to `<VAULT_ROOT>/personal/diary.md` (most-recent-first format). Match the existing voice; don't sanitize.
+Don't push if no. If yes, prepend to `personal/diary.md` (most-recent-first format). Match the existing voice; don't sanitize.
 
 ---
 
@@ -111,7 +111,7 @@ Edit today's journal to fill in the Evening section (Franklin's "What good have 
 ## Step 8: Offer commit
 
 ```bash
-cd <VAULT_ROOT> && git status --short
+git status --short
 ```
 
 If there are uncommitted changes, offer:

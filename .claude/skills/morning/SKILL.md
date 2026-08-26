@@ -19,15 +19,15 @@ Run both in parallel. Don't serialize.
 
 **Calendar:**
 ```bash
-<VAULT_ROOT>/calendar/export-calendar.sh
+calendar/export-calendar.sh
 ```
-Then read `<VAULT_ROOT>/calendar/this-week.md`.
+Then read `calendar/this-week.md`.
 
 **Email scan:**
 ```bash
-<VAULT_ROOT>/scripts/email-scan.sh
+scripts/email-scan.sh
 ```
-Then read `<VAULT_ROOT>/calendar/email-scan.md`.
+Then read `calendar/email-scan.md`.
 
 If either fails: continue without it. Don't block the routine; note the failure briefly.
 
@@ -38,9 +38,9 @@ If either fails: continue without it. Don't block the routine; note the failure 
 ## Step 2: Load yesterday + current state
 
 In parallel:
-- `<VAULT_ROOT>/journal/YYYY/MM/YYYY-MM-DD.md` for yesterday (calculate date with `date -v-1d "+%Y/%m/%Y-%m-%d"`). If missing, look back up to 7 days.
-- `<VAULT_ROOT>/journal/YYYY/goals.md` — annual goals
-- `<VAULT_ROOT>/now.md` — current state (substitute for full `projects.md` scan unless something specific needs checking)
+- `journal/YYYY/MM/YYYY-MM-DD.md` for yesterday (calculate date with `date -v-1d "+%Y/%m/%Y-%m-%d"`). If missing, look back up to 7 days.
+- `journal/YYYY/goals.md` — annual goals
+- `now.md` — current state (substitute for full `projects.md` scan unless something specific needs checking)
 
 Don't summarize yet. Just load.
 
@@ -48,7 +48,7 @@ Don't summarize yet. Just load.
 
 ## Step 3: Diary check
 
-Read the latest entry in `<VAULT_ROOT>/personal/diary.md` (most-recent-first format — read from the top until you hit the next `---` divider).
+Read the latest entry in `personal/diary.md` (most-recent-first format — read from the top until you hit the next `---` divider).
 
 This calibrates the rest of the routine: emotional state, recent reflections, anything the user is sitting with. Don't reference this back to them unless they ask — it's context for how to engage, not material to surface.
 
@@ -56,7 +56,7 @@ This calibrates the rest of the routine: emotional state, recent reflections, an
 
 ## Step 4: Inbox hygiene
 
-Read `<VAULT_ROOT>/inbox.md` top-to-bottom. Identify candidates for removal:
+Read `inbox.md` top-to-bottom. Identify candidates for removal:
 - Past deadlines that have passed
 - "Waiting on" items where the thing arrived (cross-reference recent journals / `completed.md`)
 - Travel/dates that already happened
@@ -107,9 +107,9 @@ Push back if something sounds like narrative rather than reality. Surface emotio
 
 ## Step 6: Create today's journal
 
-Path: `<VAULT_ROOT>/journal/YYYY/MM/YYYY-MM-DD.md`
+Path: `journal/YYYY/MM/YYYY-MM-DD.md`
 
-If today's entry doesn't exist, create it from `<VAULT_ROOT>/templates/daily-journal.md`. Use today's actual day-of-week + date in the title.
+If today's entry doesn't exist, create it from `templates/daily-journal.md`. Use today's actual day-of-week + date in the title.
 
 ---
 
@@ -117,7 +117,7 @@ If today's entry doesn't exist, create it from `<VAULT_ROOT>/templates/daily-jou
 
 This is a real step, not ritual filler. The diary read in Step 3 sets the tone.
 
-Optionally read 1-2 recent files from `<VAULT_ROOT>/notes/` if relevant context might exist (e.g., a recent insight that connects to today).
+Optionally read 1-2 recent files from `notes/` if relevant context might exist (e.g., a recent insight that connects to today).
 
 Offer a brief honest reflection — typically 3-4 sentences total:
 
@@ -168,7 +168,7 @@ Don't let zombie items pile up. Making the user decide is the value of the carry
 
 ## Step 11: Update now.md
 
-Quick pass over `<VAULT_ROOT>/now.md` Active table. For each project, ask: does the Status column reflect current reality based on this morning's context (yesterday's journal, calendar, email scan)?
+Quick pass over `now.md` Active table. For each project, ask: does the Status column reflect current reality based on this morning's context (yesterday's journal, calendar, email scan)?
 
 - Update stale status lines
 - Move resolved items off the Active table
@@ -186,7 +186,7 @@ When something log-worthy comes up in conversation:
 - Tell the user: "Added to log: [brief summary]"
 - Don't ask permission — keep the conversation flowing
 
-When ideas/insights surface, create atomic notes in `<VAULT_ROOT>/notes/` per CLAUDE.md — don't ask, just do it and say "Noted: [filename]".
+When ideas/insights surface, create atomic notes in `notes/` per CLAUDE.md — don't ask, just do it and say "Noted: [filename]".
 
 ---
 

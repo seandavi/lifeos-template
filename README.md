@@ -68,10 +68,9 @@ gh repo clone seandavi/lifeos-template ~/Documents/lifeos
 git clone https://github.com/seandavi/lifeos-template.git ~/Documents/lifeos
 cd ~/Documents/lifeos
 
-# 2. From within Claude Code (anywhere), run:
+# 2. From within your AI coding assistant (Claude Code / Antigravity), run:
 /init
-# Answers a few questions (vault path, name, timezone, email tooling)
-# and substitutes <VAULT_ROOT> throughout the skill files + CLAUDE.md.
+# Answers a few questions (name, email, timezone, tooling) to configure config.yaml.
 
 # 3. Tour the system:
 /orient

@@ -1,6 +1,6 @@
 ---
 name: decide-revisit
-description: "Scheduled revisit of decisions whose Review Date has passed. Reads <VAULT_ROOT>/decisions/, filters to open decisions with overdue or due-today review dates, walks through each one comparing prediction vs reality, appends a revisit entry, and updates status. Use when user says 'revisit decisions', '/decide-revisit', or monthly on the 15th."
+description: "Scheduled revisit of decisions whose Review Date has passed. Reads decisions/, filters to open decisions with overdue or due-today review dates, walks through each one comparing prediction vs reality, appends a revisit entry, and updates status. Use when user says 'revisit decisions', '/decide-revisit', or monthly on the 15th."
 user-invocable: true
 allowed-tools: Read, Edit, Glob, Bash, AskUserQuestion
 ---
@@ -20,7 +20,7 @@ date "+%Y-%m-%d"
 ```
 
 ```
-Glob: <VAULT_ROOT>/decisions/*.md
+Glob: decisions/*.md
 ```
 
 For each: extract Status, Review Date, title.
