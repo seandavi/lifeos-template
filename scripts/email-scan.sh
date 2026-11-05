@@ -17,11 +17,11 @@
 #
 # Usage: ./email-scan.sh
 #
-# Output: <VAULT_ROOT>/calendar/email-scan.md
+# Output: calendar/email-scan.md
 
-set -euo pipefail
-
-OUTFILE="${LIFEOS_HOME:-$HOME/Documents/lifeos}/calendar/email-scan.md"
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+VAULT_ROOT="${LIFEOS_HOME:-$(cd "$SCRIPT_DIR/.." && pwd)}"
+OUTFILE="$VAULT_ROOT/calendar/email-scan.md"
 LLM_CMD="${EMAIL_LLM:-gemini --yolo}"
 
 # Detect Mail.app

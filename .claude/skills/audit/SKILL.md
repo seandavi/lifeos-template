@@ -1,13 +1,13 @@
 ---
 name: audit
-description: "Vault hygiene meta-skill. Scans <VAULT_ROOT>/ for decay: stale goals.md, dormant now.md, projects with no recent activity, broken wiki-links, orphan notes, decisions without revisit dates, stale people records, zombie inbox items. Outputs a vault health score, top fixes, and offers low-risk auto-fixes with confirmation. Use when user says 'audit', '/audit', 'lint the vault', or monthly on the 1st."
+description: "Vault hygiene meta-skill. Scans the vault for decay: stale goals.md, dormant now.md, projects with no recent activity, broken wiki-links, orphan notes, decisions without revisit dates, stale people records, zombie inbox items. Outputs a vault health score, top fixes, and offers low-risk auto-fixes with confirmation. Use when user says 'audit', '/audit', 'lint the vault', or monthly on the 1st."
 user-invocable: true
 allowed-tools: Read, Edit, Write, Glob, Grep, Bash, AskUserQuestion
 ---
 
 # Vault Audit
 
-A forensic health check on the vault at `<VAULT_ROOT>`. Detect decay before it bites. Specific, evidence-based, ranked. Do not preach.
+A forensic health check on the vault. Detect decay before it bites. Specific, evidence-based, ranked. Do not preach.
 
 **Tone:** Forensic, not nagging. "Your system is decaying in these specific ways." Cite files, dates, counts. Push back if real signal gets dismissed as noise.
 
@@ -35,10 +35,10 @@ Use Bash + Read + Glob to collect signals at once.
 
 ### Staleness checks:
 ```bash
-stat -f "%Sm %N" -t "%Y-%m-%d" <VAULT_ROOT>/plan.md
-stat -f "%Sm %N" -t "%Y-%m-%d" <VAULT_ROOT>/journal/$(date +%Y)/goals.md
-stat -f "%Sm %N" -t "%Y-%m-%d" <VAULT_ROOT>/now.md
-stat -f "%Sm %N" -t "%Y-%m-%d" <VAULT_ROOT>/values.md
+stat -f "%Sm %N" -t "%Y-%m-%d" plan.md
+stat -f "%Sm %N" -t "%Y-%m-%d" journal/$(date +%Y)/goals.md
+stat -f "%Sm %N" -t "%Y-%m-%d" now.md
+stat -f "%Sm %N" -t "%Y-%m-%d" values.md
 ```
 
 Thresholds:
@@ -50,13 +50,13 @@ Thresholds:
 ### Project activity:
 For each project in `now.md` Active table, find last journal mention:
 ```bash
-grep -rl "project-name" <VAULT_ROOT>/journal/$(date +%Y)/ | head
+grep -rl "project-name" journal/$(date +%Y)/ | head
 ```
 No mention in 14+ days → drift candidate.
 
 ### Open decisions:
 ```
-Glob: <VAULT_ROOT>/decisions/*.md
+Glob: decisions/*.md
 ```
 For each: read frontmatter. Flag:
 - `Status: Open` with no `Review Date` → missing revisit
@@ -80,7 +80,7 @@ obsidian deadends             # notes with no outgoing links
 
 Filesystem fallback:
 ```bash
-grep -rohE '\[\[([^]]+)\]\]' <VAULT_ROOT>/{notes,research,decisions,journal,people}/ 2>/dev/null | sort -u
+grep -rohE '\[\[([^]]+)\]\]' {notes,research,decisions,journal,people}/ 2>/dev/null | sort -u
 ```
 For each unique `[[X]]`, check whether `X.md` exists in `notes/`, `research/`, `decisions/`, `people/`, `wiki/*/entities/`, `wiki/*/concepts/`, `wiki/*/sources/`, `journal/`, `reference/`.
 
@@ -90,13 +90,13 @@ Report broken links — but treat as low-severity unless count is large (per CLA
 
 Covered by `obsidian orphans` above when the CLI is available. Fallback:
 ```
-Glob: <VAULT_ROOT>/notes/*.md
+Glob: notes/*.md
 ```
 For each `foo.md`, search for `[[foo]]` in the rest of the vault. Zero hits → orphan candidate. Only flag if > 90 days old AND zero inbound links.
 
 ### People record activity:
 ```
-Glob: <VAULT_ROOT>/people/*.md
+Glob: people/*.md
 ```
 No interaction in 6+ months → ask if move to `people/archive/`. Don't move automatically.
 

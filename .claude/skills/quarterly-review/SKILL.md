@@ -22,21 +22,21 @@ date -v-90d "+%Y-%m-%d"
 ```
 
 In parallel:
-- `<VAULT_ROOT>/plan.md`
-- `<VAULT_ROOT>/journal/YYYY/goals.md`
-- `<VAULT_ROOT>/values.md`
-- `<VAULT_ROOT>/now.md`
-- `<VAULT_ROOT>/completed.md` (last 90 days)
-- `<VAULT_ROOT>/projects.md`
+- `plan.md`
+- `journal/YYYY/goals.md`
+- `values.md`
+- `now.md`
+- `completed.md` (last 90 days)
+- `projects.md`
 
 Weekly reviews from the last quarter:
 ```
-Glob: <VAULT_ROOT>/journal/YYYY/MM/week-*.md
+Glob: journal/YYYY/MM/week-*.md
 ```
 
 Decisions in the last quarter:
 ```
-Glob: <VAULT_ROOT>/decisions/*.md
+Glob: decisions/*.md
 ```
 Filter by Opened date or modification date in last 90 days.
 
@@ -109,7 +109,7 @@ Sit with this. Don't rush. Establish first what's actually changed.
 > - Surgical edits — fix specific items, keep structure
 
 If "rewrite now":
-- Use `<VAULT_ROOT>/templates/goals.md` as the structure
+- Use `templates/goals.md` as the structure
 - Draft based on narrative + premise check
 - Use AskUserQuestion liberally — one goal at a time
 - Reference plan.md to ensure goals ladder up
@@ -129,7 +129,7 @@ Each priority should be:
 - **Tied to an annual goal** (or named as adding to goals.md)
 - **Have a deliverable or signal** by quarter end
 
-Write to `<VAULT_ROOT>/journal/YYYY/Q{{N+1}}-priorities.md` or append to goals.md.
+Write to `journal/YYYY/Q{{N+1}}-priorities.md` or append to goals.md.
 
 ---
 
@@ -157,7 +157,7 @@ Summarize. Don't re-do `/decide-revisit`.
 
 ## Step 9: Write the quarterly review file
 
-Path: `<VAULT_ROOT>/journal/YYYY/Q{{N}}-review.md`
+Path: `journal/YYYY/Q{{N}}-review.md`
 
 ```markdown
 # Q{{N}} YYYY Review — Completed YYYY-MM-DD
@@ -194,7 +194,7 @@ Path: `<VAULT_ROOT>/journal/YYYY/Q{{N}}-review.md`
 ## Step 10: Update now.md (and memory if used)
 
 The quarterly review changes the strategic frame. Update:
-- `<VAULT_ROOT>/now.md` to reflect new priorities
+- `now.md` to reflect new priorities
 - (If Claude Code memory is in use) project memory file with new key context
 
 Confirm before writing.

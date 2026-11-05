@@ -1,0 +1,22 @@
+# LifeOS Central Vault Configuration
+
+owner:
+  name: "Your Name"
+  slug: "your-name"
+  email: "your.email@example.com"
+  email_alt: []
+  github: "yourusername"
+
+vault:
+  name: "LifeOS"
+  timezone: "UTC"
+  lookback_days: 14
+
+# User tool & workflow preferences
+tools:
+  email_llm: "gemini --yolo"
+  calendar_backend: "icalBuddy"
+  track_effort_by_project: false
+
+# Optional external integrations
+external: {}

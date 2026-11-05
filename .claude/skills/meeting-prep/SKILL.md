@@ -21,9 +21,9 @@ If invoked with `/meeting-prep [person]`, prep that person's meeting if on the c
 
 Run the calendar export first:
 ```bash
-<VAULT_ROOT>/calendar/export-calendar.sh 2>/dev/null
+calendar/export-calendar.sh 2>/dev/null
 ```
-Then read `<VAULT_ROOT>/calendar/this-week.md` for the target day's events.
+Then read `calendar/this-week.md` for the target day's events.
 
 Skip:
 - All-day events (typically travel/holidays)
@@ -36,28 +36,28 @@ Skip:
 
 In parallel:
 
-1. **Resolve attendees** — from event title/description, extract names. For each, check `<VAULT_ROOT>/people/[name].md` exists via Glob with kebab-case patterns.
+1. **Resolve attendees** — from event title/description, extract names. For each, check `people/[name].md` exists via Glob with kebab-case patterns.
 
 2. **Read each person file.** Pull: role, domains, tags, recent interactions, open threads.
 
 3. **Find recent journal mentions** (last 30 days):
    ```bash
-   grep -rl "person-name" <VAULT_ROOT>/journal/$(date +%Y)/ | head -10
+   grep -rl "person-name" journal/$(date +%Y)/ | head -10
    ```
    Read the mentions. Pull 1-2 most relevant log lines.
 
 4. **Open inbox items touching them:**
    ```bash
-   grep -n "person\|topic" <VAULT_ROOT>/inbox.md
+   grep -n "person\|topic" inbox.md
    ```
 
 5. **Open decisions involving them:**
    ```
-   Glob: <VAULT_ROOT>/decisions/*.md
+   Glob: decisions/*.md
    ```
    Read frontmatter; flag any where this person is named.
 
-6. **Last email signal** — read `<VAULT_ROOT>/calendar/email-scan.md` for recent mentions.
+6. **Last email signal** — read `calendar/email-scan.md` for recent mentions.
 
 7. **Project context** — if the meeting title or person record mentions a project, read the relevant section of `projects.md` and `now.md`.
 
@@ -119,7 +119,7 @@ After all briefs, add:
 
 ## Step 5: Save the brief
 
-Write to `<VAULT_ROOT>/calendar/prep/YYYY-MM-DD.md`.
+Write to `calendar/prep/YYYY-MM-DD.md`.
 
 Create the `calendar/prep/` directory if it doesn't exist.
 

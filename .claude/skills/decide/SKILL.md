@@ -1,6 +1,6 @@
 ---
 name: decide
-description: "Capture a decision prospectively in Patrick Collison / Farnam Street format. Writes to <VAULT_ROOT>/decisions/YYYY-MM-DD-slug.md with context, alternatives, prediction, confidence, key factors, emotional state, and a revisit date. Forces articulation before action. Use when user says 'decide', '/decide', 'capture this decision', 'I'm going to X', or surfaces a substantive choice (hire, grant, role, structural commitment)."
+description: "Capture a decision prospectively in Patrick Collison / Farnam Street format. Writes to decisions/YYYY-MM-DD-slug.md with context, alternatives, prediction, confidence, key factors, emotional state, and a revisit date. Forces articulation before action. Use when user says 'decide', '/decide', 'capture this decision', 'I'm going to X', or surfaces a substantive choice (hire, grant, role, structural commitment)."
 user-invocable: true
 allowed-tools: Read, Write, Glob, AskUserQuestion
 ---
@@ -84,9 +84,9 @@ Only push where the answer matters. Don't make it performative.
 
 ## Step 5: Write the file
 
-Path: `<VAULT_ROOT>/decisions/YYYY-MM-DD-{slug}.md`
+Path: `decisions/YYYY-MM-DD-{slug}.md`
 
-Use `<VAULT_ROOT>/templates/decision.md` as the structure.
+Use `templates/decision.md` as the structure.
 
 ---
 

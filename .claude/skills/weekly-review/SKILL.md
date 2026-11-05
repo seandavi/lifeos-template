@@ -7,23 +7,13 @@ allowed-tools: Read, Edit, Write, Glob, Grep, Bash, AskUserQuestion
 
 # Weekly Review
 
-You are running the Friday weekly review for the life-OS vault at `<VAULT_ROOT>`. The cadence layer is the bottleneck of most systems — your job is to make it real.
+You are running the Friday weekly review for the LifeOS vault. The cadence layer is the bottleneck of most systems — your job is to make it real.
 
 **Tone:** Critical partner. Direct, evidence-based, no participation trophies. Push back when items got marked done but were actually bookkeeping, or when "stuck" items are quietly zombie items. Use AskUserQuestion to force decisions, not just gather info.
 
 ---
 
-## Step 1: Pre-requisites (Sequential)
-
-1. **Sync GitHub Activity:**
-   ```bash
-   python3 <VAULT_ROOT>/scripts/github-activity-sync.py --vault <VAULT_ROOT> --days 7
-   ```
-   Wait for this to complete before gathering context, to ensure journal logs are up to date.
-
----
-
-## Step 2: Determine the week + load context
+## Step 1: Determine the week + load context
 
 Run these in parallel:
 
@@ -36,22 +26,22 @@ Run these in parallel:
    If today isn't Friday/Saturday/Sunday, ask the user which week boundary they want.
 
 2. **Load these files in parallel:**
-   - `<VAULT_ROOT>/inbox.md`
-   - `<VAULT_ROOT>/now.md`
-   - `<VAULT_ROOT>/journal/YYYY/goals.md`
-   - `<VAULT_ROOT>/completed.md` (read top 50 lines)
-   - `<VAULT_ROOT>/calendar/this-week.md`
-   - `<VAULT_ROOT>/personal/diary.md` (top entry only)
-   - `<VAULT_ROOT>/projects.md`
+   - `inbox.md`
+   - `now.md`
+   - `journal/YYYY/goals.md`
+   - `completed.md` (read top 50 lines)
+   - `calendar/this-week.md`
+   - `personal/diary.md` (top entry only)
+   - `projects.md`
 
 3. **Find this week's journal entries:**
    ```
-   Glob: <VAULT_ROOT>/journal/YYYY/MM/YYYY-MM-DD.md for each of the past 7 dates
+   Glob: journal/YYYY/MM/YYYY-MM-DD.md for each of the past 7 dates
    ```
 
 4. **Scan open decisions:**
    ```
-   Glob: <VAULT_ROOT>/decisions/*.md
+   Glob: decisions/*.md
    ```
    Read any with `Status: Open` or `Status: Active`. Check `Review Date` fields.
 
@@ -96,7 +86,7 @@ Build internal notes on:
 
 ## Step 4: Update now.md
 
-Edit `<VAULT_ROOT>/now.md`:
+Edit `now.md`:
 
 1. Refresh the date stamp: `*Updated: YYYY-MM-DD*`
 2. **This Week's Focus** → next week's hinges
@@ -145,7 +135,7 @@ If `goals.md` is > 30 days stale OR flagged for rewrite in `now.md` On My Mind:
 
 ## Step 8: Draft week-WW.md
 
-Write to `<VAULT_ROOT>/journal/YYYY/MM/week-WW.md` (ISO week number from Step 2). Use `<VAULT_ROOT>/templates/week-review.md` as the structure.
+Write to `journal/YYYY/MM/week-WW.md` (ISO week number from Step 2). Use `templates/week-review.md` as the structure.
 
 Show before writing.
 
@@ -168,7 +158,7 @@ Before writing `now.md` updates or `week-WW.md`, present a brief diff summary. O
 
 Offer to commit:
 ```bash
-cd <VAULT_ROOT> && git add -A && git commit -m "weekly review: week WW"
+git add -A && git commit -m "weekly review: week WW"
 ```
 Don't push without explicit ask.
 
